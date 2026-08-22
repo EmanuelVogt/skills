@@ -1,0 +1,79 @@
+{
+  "skill_name": "grill-my-idea",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Tenho uma ideia e quero que você analise ela de forma crítica, sem dó. Não me faça perguntas — assume o que precisar e vai até o fim, salvando tudo na pasta ideas/. A ideia: um sistema de gestão para pet shops pequenos (1 a 3 funcionários) com agendamento de banho e tosa, lembretes automáticos no WhatsApp e cobrança via Pix. Cobrar R$ 149/mês. Somos eu (dev fullstack, 10 anos) e um sócio que tem um pet shop em Campinas há 6 anos. Temos uns R$ 40 mil pra investir e 6 meses de runway. Quero saber se dá pra viver disso (tipo R$ 20 mil/mês pra cada um em 2 anos) ou se é furada.",
+      "expected_output": "An English-language dossier in ideas/<slug>/ (the user wrote in Portuguese; the files must still be in English, with the original pitch quoted verbatim) with README.md (verdict in the first line, 3-scenario numbers table, likeliest killer, next steps), numbered files for market (Brazil + international, TAM/SAM/SOM with sources), competitors (real Brazilian pet-shop software such as Simples Vet, Vetus, Petshop Control, Petlove/Petz ecosystem tools and international analogues), customer/demand, financial model (cost to run in BRL, break-even users, pessimistic/realistic/optimistic via the script), GTM, risks & verdict, 30/60/90 validation plan, model.json, sources.md. The verdict must address whether R$ 20k/month for each founder in 2 years is plausible, with explicit numbers.",
+      "files": [],
+      "expectations": [
+        "README verdict line: a README.md exists in the dossier folder and its first line (H1) contains exactly one of GO / VALIDATE-FIRST / PIVOT / KILL",
+        "English dossier: every dossier file is written in English (the original pitch may be quoted verbatim in the user's language)",
+        "TAM/SAM/SOM in customers AND annual revenue: the market file states all three as a customer count and as yearly revenue, with the method (top-down/bottom-up) and a tag ([data]/[benchmark]/[estimate]/[guess]) or a cited source for each",
+        "Home + international market: the market analysis covers the home country (Brazil) in depth AND an international view (size, analogues in other countries, foreign players that could enter)",
+        "Competitor table with >=5 real named competitors including pricing, at least one international player, and the status-quo workaround (WhatsApp / spreadsheet / do nothing) treated as a competitor",
+        "Three scenarios with distinct stated assumptions: pessimistic, realistic and optimistic are each defined by explicit input differences (price, churn, CAC, organic growth, launch delay, costs), not a +/-% on a base number",
+        "Break-even expressed three ways: users/customers needed, months to reach it, and cash required (peak cash need) — for at least the realistic scenario",
+        "Cost-to-run table in local currency with line items (team, infra/tools, payment fees, taxes, accounting, marketing) and a separate MVP build cost",
+        "Re-runnable financial model: a machine-readable input file (model.json) exists and running scripts/financial_model.py on it reproduces the scenario tables without error",
+        "Sources bibliography: a sources file lists >=15 distinct URLs with access dates, and numbers in the market/competitor files reference those sources",
+        "Pre-mortem with >=5 named failure modes and one explicitly named 'likeliest killer'; the verdict states which game the idea is playing (venture-scale vs indie/lifestyle)",
+        "30/60/90-day validation plan with at least 3 experiments, each with explicit go and kill criteria, and a budget",
+        "Non-interactive assumptions surfaced: the README (or interview file) lists the consequential assumptions the analyst made on the user's behalf",
+        "Answers the user's question with numbers: states how many paying pet shops / what MRR would be needed for ~R$ 20k/month per founder in 2 years and says explicitly whether that is plausible under the realistic scenario",
+        "Names real Brazilian pet-shop management software competitors (e.g. Simples Vet, Vetus, Petshop Control, PetNow, GestãoPet or similar actual products) with their prices"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I want to validate an app idea: intercity carpooling between mid-size cities in the interior of São Paulo state (Campinas–Piracicaba, Ribeirão Preto–Franca, etc.), matching drivers and passengers, we keep 15% of each ride. I think lots of people do this through WhatsApp groups today. Assume whatever you need, no need to ask me. I'm a solo dev with ~15 h/week and little money (about R$ 10k). Tell me if it's worth it and save the analysis under ideas/",
+      "expected_output": "A dossier in ideas/<slug>/ that treats this as a two-sided marketplace with liquidity risk, identifies BlaBlaCar (already operating in Brazil) and WhatsApp groups as the real competition, sizes the intercity corridor market in SP with sources, models a marketplace ARPU (GMV × 15% take rate), computes break-even in rides/users and cash needed for a solo founder with R$ 10k, flags regulatory/insurance exposure, and gives a critical verdict (likely PIVOT or KILL, or VALIDATE-FIRST with a very cheap test) with a 30/60/90 plan. README first line carries the verdict.",
+      "files": [],
+      "expectations": [
+        "README verdict line: a README.md exists in the dossier folder and its first line (H1) contains exactly one of GO / VALIDATE-FIRST / PIVOT / KILL",
+        "English dossier: every dossier file is written in English (the original pitch may be quoted verbatim in the user's language)",
+        "TAM/SAM/SOM in customers AND annual revenue: the market file states all three as a customer count and as yearly revenue, with the method (top-down/bottom-up) and a tag ([data]/[benchmark]/[estimate]/[guess]) or a cited source for each",
+        "Home + international market: the market analysis covers the home country (Brazil) in depth AND an international view (size, analogues in other countries, foreign players that could enter)",
+        "Competitor table with >=5 real named competitors including pricing, at least one international player, and the status-quo workaround (WhatsApp / spreadsheet / do nothing) treated as a competitor",
+        "Three scenarios with distinct stated assumptions: pessimistic, realistic and optimistic are each defined by explicit input differences (price, churn, CAC, organic growth, launch delay, costs), not a +/-% on a base number",
+        "Break-even expressed three ways: users/customers needed, months to reach it, and cash required (peak cash need) — for at least the realistic scenario",
+        "Cost-to-run table in local currency with line items (team, infra/tools, payment fees, taxes, accounting, marketing) and a separate MVP build cost",
+        "Re-runnable financial model: a machine-readable input file (model.json) exists and running scripts/financial_model.py on it reproduces the scenario tables without error",
+        "Sources bibliography: a sources file lists >=15 distinct URLs with access dates, and numbers in the market/competitor files reference those sources",
+        "Pre-mortem with >=5 named failure modes and one explicitly named 'likeliest killer'; the verdict states which game the idea is playing (venture-scale vs indie/lifestyle)",
+        "30/60/90-day validation plan with at least 3 experiments, each with explicit go and kill criteria, and a budget",
+        "Non-interactive assumptions surfaced: the README (or interview file) lists the consequential assumptions the analyst made on the user's behalf",
+        "Treats the idea as a two-sided marketplace: discusses liquidity / chicken-and-egg per corridor and disintermediation risk explicitly",
+        "Identifies BlaBlaCar (operating in Brazil) and WhatsApp/Facebook carpool groups as the real competition, with BlaBlaCar's pricing/fee model",
+        "Marketplace economics modelled correctly: ARPU derived from GMV per active user x 15% take rate, and break-even expressed in rides or active users given a solo founder with ~R$ 10k",
+        "Flags regulatory / insurance / liability exposure of intercity paid rides in Brazil"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Grill my idea. I'm a solo developer in Brazil and I want to sell globally in USD: a Chrome extension + web app that turns YouTube lectures into study notes, flashcards and quizzes for university students, $8/month, free tier with 3 videos/month. I can ship an MVP in 6 weeks and have ~$5k saved. Don't ask me questions — make reasonable assumptions, research the market properly (international first, Brazil as a secondary market), give me pessimistic/realistic/optimistic numbers, what it costs to run, how many paying users I need to live on it (~$3k/month), and save everything under ideas/.",
+      "expected_output": "An English-language dossier in ideas/<slug>/ with the international market sized first (students, edtech AI note-taking), a competitor table with real players (NoteGPT, Eightify, Glasp, YouTube Summary with ChatGPT, Notta, Quizlet/Anki as substitutes, ChatGPT/Gemini native summarization as the existential threat), LLM inference cost per user in COGS, freemium conversion benchmarks driving the model, Stripe/USD considerations for a Brazilian solo founder, break-even paying users for $3k/month take-home, three scenarios from the script, an indie-business classification, a critical verdict noting platform dependence (YouTube ToS, Chrome Web Store) and commoditization by native AI features, and a 30/60/90 plan. README first line carries the verdict.",
+      "files": [],
+      "expectations": [
+        "README verdict line: a README.md exists in the dossier folder and its first line (H1) contains exactly one of GO / VALIDATE-FIRST / PIVOT / KILL",
+        "English dossier: every dossier file is written in English (the original pitch may be quoted verbatim in the user's language)",
+        "TAM/SAM/SOM in customers AND annual revenue: the market file states all three as a customer count and as yearly revenue, with the method (top-down/bottom-up) and a tag ([data]/[benchmark]/[estimate]/[guess]) or a cited source for each",
+        "Home + international market: the market analysis covers the home country (Brazil) in depth AND an international view (size, analogues in other countries, foreign players that could enter)",
+        "Competitor table with >=5 real named competitors including pricing, at least one international player, and the status-quo workaround (WhatsApp / spreadsheet / do nothing) treated as a competitor",
+        "Three scenarios with distinct stated assumptions: pessimistic, realistic and optimistic are each defined by explicit input differences (price, churn, CAC, organic growth, launch delay, costs), not a +/-% on a base number",
+        "Break-even expressed three ways: users/customers needed, months to reach it, and cash required (peak cash need) — for at least the realistic scenario",
+        "Cost-to-run table in local currency with line items (team, infra/tools, payment fees, taxes, accounting, marketing) and a separate MVP build cost",
+        "Re-runnable financial model: a machine-readable input file (model.json) exists and running scripts/financial_model.py on it reproduces the scenario tables without error",
+        "Sources bibliography: a sources file lists >=15 distinct URLs with access dates, and numbers in the market/competitor files reference those sources",
+        "Pre-mortem with >=5 named failure modes and one explicitly named 'likeliest killer'; the verdict states which game the idea is playing (venture-scale vs indie/lifestyle)",
+        "30/60/90-day validation plan with at least 3 experiments, each with explicit go and kill criteria, and a budget",
+        "Non-interactive assumptions surfaced: the README (or interview file) lists the consequential assumptions the analyst made on the user's behalf",
+        "International market sized first (students / AI study tools) with Brazil as secondary, and prices/costs in USD",
+        "Competitor table includes real players such as NoteGPT, Eightify, Glasp, YouTube Summary with ChatGPT, Notta, and substitutes like Quizlet/Anki, plus native AI (ChatGPT/Gemini/YouTube's own AI features) as an existential threat",
+        "LLM inference cost per user is included in COGS and freemium->paid conversion benchmarks drive the user model",
+        "Break-even paying users for ~$3k/month take-home is computed explicitly (with Stripe/USD and Brazilian-founder tax considerations), and the idea is classified as an indie business",
+        "Platform dependence (YouTube ToS / Chrome Web Store policies) is named as a top risk"
+      ]
+    }
+  ]
+}
