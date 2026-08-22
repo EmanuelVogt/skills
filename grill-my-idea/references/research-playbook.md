@@ -133,6 +133,22 @@ returns almost nothing about Brazil.
 - PT: `[categoria] startup "encerra" OR "fechou" OR "descontinuado" OR "pivotou"` · `[categoria] "foi adquirida" OR "fusão"` · `[concorrente] demissões OR "layoffs"` · `[categoria] startup Brasil "não deu certo"`
 - EN: `[category] startup shut down` · `site:failory.com [category]` · `[category] "post-mortem" startup` · `[category] startup Mexico OR Colombia OR India OR Indonesia` (similar-income analogues) · `[competitor] acquired OR "ceased operations"` · `site:layoffs.fyi [category]`
 
+### 4.1 When search is unavailable or exhausted
+
+A session's web-search budget is finite and may already be spent. Probe with one query before fanning out; if it fails, do not let four subagents each rediscover it. Search is not the only way to reach a fact:
+
+| Instead of searching | Do this |
+|---|---|
+| Competitor pricing | `WebFetch` the pricing page directly — vendors keep them at predictable URLs (`/precos`, `/pricing`, `/planos`) |
+| Install base, ratings, verbatim reviews | Browser automation of the Chrome Web Store, Play Store, App Store, G2 or Capterra listing pages. These render live counts that search snippets do not carry |
+| Country statistics | Public APIs via `curl` from Bash: World Bank, IBGE SIDRA, BACEN SGS, and other open endpoints return JSON without a search engine. One API call can replace an entire dimension of guesses |
+| Company existence, size, filings | CNPJ lookup pages, SEC EDGAR full-text search, LinkedIn company pages by direct URL |
+| Category listings | Directory URLs you can construct: `g2.com/categories/<slug>`, `b2bstack.com.br/categoria/<slug>`, `ycombinator.com/companies?query=` |
+
+Two dimensions degrade badly without search and you must say so rather than pad them: the **graveyard** (finding companies that died needs discovery, not fetching) and **demand signals** (Reddit and forum aggregation — expect 403s and CAPTCHAs on direct fetch). When they come up empty, set the evidence grade accordingly, leave the quote bank empty, and make the validation plan test exactly those gaps. A dossier that admits an empty quote bank is worth more than one that invents quotes.
+
+Record in the dossier which dimensions ran without search. The quality bar's "25+ searches" is an input metric; a run that reached better evidence by other means has not failed, but the reader has to know which route was taken.
+
 ## 5. Source hierarchy and trust rules
 
 Rank sources by how close they are to the thing counted. Closer wins when numbers conflict.

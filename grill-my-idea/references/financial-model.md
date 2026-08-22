@@ -178,6 +178,20 @@ Practical rule: two founders on minimum pró-labore with automated delivery usua
 | Small team | 2 founders on pró-labore mínimo + 1 dev PJ pleno + freelance design | R$ 18,000–40,000 | The default realistic case for a Brazilian pre-seed |
 | Funded team | 5–8 people (2 devs, design, 1–2 sales, CS), coworking, full tooling | R$ 80,000–200,000 | R$ 1–2.4M/yr: a seed round |
 
+### 3.6b Brazilian founder selling abroad in USD
+
+A common shape, and the Brazilian tables above mostly do not apply to the revenue side. Model these explicitly:
+
+| Item | What to assume | Why it matters |
+|---|---|---|
+| Merchant of record (Paddle, Lemon Squeezy, Polar) vs. a plain gateway (Stripe) | MoR ≈ 5 % + fixed per transaction; Stripe 2.9 % + US$ 0.30 (+1 % currency conversion, +1.5 % international cards) | An MoR handles global sales tax/VAT for you, which is worth real money for a solo founder — but on a **low ticket the fixed fee dominates**: US$ 0.50 on an US$ 8 charge is 6.25 %, and combined with the percentage the effective take can pass 11 %. Always express the fee as a % of *your* price, not as the headline rate. |
+| Free tier | Cost per free user × free-to-paid ratio | On AI products the free tier is a real COGS line: 10 free users per payer at US$ 0.10 each is US$ 1.00 of COGS on every paying customer. Put it in `cogs_per_user_monthly`, not in a footnote. |
+| Receiving USD in Brazil | Wise/Husky/Nomad or a PJ invoice; spread + IOF on FX (rates change — verify) | The rate you model is not the rate you receive. |
+| Tax on exported services | Simples Nacional still applies to the revenue; PIS/COFINS and ISS generally do not apply to exported services, subject to conditions | Effective tax can be materially below the domestic case — confirm with a contador before it drives the verdict. |
+| Building the product in BRL, earning in USD | Costs in the §3.1–3.6 tables, revenue in USD | This is the structural advantage of the shape and should be stated: a US price with a Brazilian cost base. FX moves both ways; put an adverse rate in the pessimistic scenario. |
+
+Set `currency` to `USD` and keep every cost in USD for consistency; note the FX rate and date used to convert the Brazilian cost base.
+
 ### 3.7 International variant (US entity)
 
 Delaware LLC or C-corp via Stripe Atlas / Firstbase / Clerky (~US$ 500 one-time) + registered agent US$ 100–300/yr + Delaware franchise tax (US$ 300 LLC; US$ 225–450+ C-corp plus annual report) + US accountant and filings US$ 1,500–5,000/yr (a C-corp with foreign owners files Form 5472 and tends to the top) + Mercury/Brex banking (free) + Stripe 2.9 % + US$ 0.30 (+1.5 % international cards, +1 % currency conversion) + SaaS sales tax in 20+ states once nexus is reached. Team in USD: LatAm remote contractor dev US$ 6,000–15,000/month; US-based US$ 12,000–25,000. Small-team fixed burn US$ 8,000–30,000/month. A Brazilian founder invoicing the US entity from a Brazilian PJ pays Brazilian tax on exported services (Simples; PIS/COFINS/ISS export exemptions may apply). US prices run 2–3× the Brazilian list (§4.3) — which is the reason to go international at all.
@@ -217,7 +231,19 @@ arpu_monthly = Σ (tier_share × tier_price_monthly_equivalent) × (1 − avg_di
 
 Annual plans enter at annual price ÷ 12. Model-specific mappings of "one user = one active paying customer":
 
-- **Marketplace:** `arpu_monthly = GMV per active paying customer per month × take rate`. The "user" is the side you bill and acquire (seller for B2B, buyer for consumer); COGS carries processing on the GMV you handle, payouts and support; the other side's acquisition goes into `fixed_costs_monthly` (a supply team) or is blended into `cac`.
+- **Marketplace:** set `gmv_per_user_monthly` and `take_rate` in `base` instead of `arpu_monthly` — the script derives ARPU and, crucially, puts the **take rate into the sensitivity table**, which is the one lever a marketplace founder actually controls. Add `payment_fee_pct_of_gmv` and the script charges it on gross volume; keep `cogs_per_user_monthly` for the non-payment costs. The "user" is the side you bill and acquire (seller for B2B, buyer for consumer); the other side's acquisition goes into `fixed_costs_monthly` (a supply team) or is blended into `cac`.
+
+  **The fee-on-GMV trap — check this before anything else in a marketplace.** Costs that scale with gross volume are `1 ÷ take_rate` times worse than they look against the revenue you keep. At a 15 % take, a 1 % payment fee on GMV eats **6.7 %** of your revenue; at a 5 % take it eats 20 %. Run the arithmetic explicitly:
+
+  ```
+  take 15%, GMV R$ 88/user/month  → revenue R$ 13.20
+  payment fee 1% of GMV           → R$ 0.88 = 6.7% of revenue
+  refunds/chargebacks 2% of GMV   → R$ 1.76 = 13.3% of revenue
+  ```
+
+  Low-take, low-ticket marketplaces frequently die here and nowhere else: 15 % of a R$ 22 seat is R$ 3.30, and R$ 3.30 has to fund payments, trust-and-safety, support and refunds before it funds the product. Also check the **price the take rate adds to the end user** — if it pushes your product above the substitute (the bus, the free WhatsApp group), the fee destroys the value proposition *and* fails to fund the business, which is a KILL, not a pricing tweak.
+
+  **What the script cannot model:** the two-sided cold start. There is no supply side, no fill rate and no liquidity in the schema — `organic_new_users_monthly` silently assumes supply is always there. State that limitation in the dossier, cap `sam_users` at what the supply side can actually serve, and treat liquidity per corridor/city/category as a risk in `07-risks-and-verdict.md`, not as a number in the model.
 - **Transactional / usage:** `events per month × unit price`; churn = customers who stop transacting.
 - **Ads:** user = monthly active user; `arpu_monthly = sessions per MAU × impressions per session × eCPM ÷ 1000` (BR display eCPM R$ 1–10; video/rewarded R$ 10–40); churn = MAU decay; CAC = cost per install ÷ activation rate.
 - **Services / agency:** user = active client on retainer; COGS = delivery labor per client (50–70 % of the retainer).
@@ -364,7 +390,17 @@ The script reads one file. `base` is the realistic case. `scenarios.pessimistic`
 }
 ```
 
-1. **`idea`, `currency`, `horizon_months`.** The dossier slug; `BRL` unless the product sells abroad; 36 months by default, 24 for consumer products with fast feedback, 48–60 for enterprise sales cycles. Optional `base.ltv_cap_months` (default 60) caps the customer lifetime used for LTV — set 36 for SMB/consumer.
+1. **`idea`, `currency`, `horizon_months`.** The dossier slug; `BRL` unless the product sells abroad; 36 months by default, 24 for consumer products with fast feedback, 48–60 for enterprise sales cycles.
+
+**Optional fields beyond the core schema** — all valid in `base` and in a scenario override:
+
+| Field | Effect |
+|---|---|
+| `founder_income_target_monthly` + `founders` | Computes the month each founder actually earns that much (sustained three months, not touched once) and prints it as the **first row** of the summary — the row `report-template.md` requires. Set it to whatever the founder said their goal was. |
+| `ltv_cap_months` | Caps the lifetime used for LTV (default 60). Use 36 for SMB/consumer. |
+| `gmv_per_user_monthly` + `take_rate` | Marketplace mode: derives ARPU and makes the take rate a sensitivity lever. Replaces `arpu_monthly`. |
+| `payment_fee_pct_of_gmv` | Marketplace mode: charges the fee on gross volume, added on top of `cogs_per_user_monthly`. See §4.4. |
+| `one_time_costs` | Valid inside a scenario, not only at the top level — a pessimistic case usually should carry a higher one. |
 2. **Choose the unit and map the model** (§4.4). "User" means one active paying customer. Decide which side you bill, what one month of that customer is worth, and what it costs to serve them.
 3. **`arpu_monthly`** from §4.4, blended across tiers, net of discounts and payment failures, gross of tax and processing. Note the competitor anchors and the tier mix.
 4. **`cogs_per_user_monthly`** from §3.3 plus hosting, API and support per user. For AI products, estimate tokens per active user per month × price and write the assumption down.

@@ -106,6 +106,14 @@ regulation/tax, trends and why-now, cost-to-run benchmarks, channels/CAC,
 and analogues in other countries (including the graveyard). Use PT-BR queries
 for Brazilian sources and EN for international ones.
 
+**Probe the search tool with one query before fanning out.** A session has a
+finite web-search budget and it may already be spent. One probe costs a single
+call; discovering exhaustion after four subagents have each burned a full
+context rediscovering it costs the run. If search is unavailable, say so to the
+user, switch every subagent to direct `WebFetch` of known URLs (the playbook's
+source catalogs and competitors' own pricing pages), and mark the dimensions
+that degrade — the graveyard and demand-signal dimensions suffer most.
+
 When the `Agent` tool is available, split the work into the 4–6 parallel
 subagents the playbook specifies; each writes its `research/<dimension>.md`
 and returns the playbook's output contract. Otherwise run the dimensions
@@ -173,7 +181,11 @@ rest.
 
 ## Quality bar
 
-- Minimum 25 distinct searches across dimensions; competitor table with ≥ 5
+- Minimum 25 distinct searches across dimensions **when search is available** —
+  it is an input metric, not the goal. A run that reached better evidence by
+  fetching pricing pages, driving a browser over store listings and calling open
+  APIs has not failed; say which route was taken and which dimensions degraded.
+  Competitor table with ≥ 5
   real entries (home and international) or an explicit statement of why fewer
   exist; TAM/SAM/SOM shown both as customers and annual revenue with method and
   tag; cost-to-run table in local currency; three scenarios with named
