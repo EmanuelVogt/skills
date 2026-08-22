@@ -80,6 +80,9 @@ LABELS = {
         "assumptions": "Assumptions",
         "warnings": "Warnings",
         "market": "Market sizing (from inputs)",
+        "income_month_multi": "Month each founder earns {amt}/month",
+        "income_month_solo": "Month you earn {amt}/month",
+        "peak_profit": "Best monthly profit in the horizon",
         "users_m12": "Users @ m12",
         "users_m24": "Users @ m24",
         "users_m36": "Users @ m36",
@@ -138,6 +141,9 @@ LABELS = {
         "assumptions": "Premissas",
         "warnings": "Alertas",
         "market": "Tamanho de mercado (a partir dos inputs)",
+        "income_month_multi": "Mês em que cada sócio ganha {amt}/mês",
+        "income_month_solo": "Mês em que você ganha {amt}/mês",
+        "peak_profit": "Melhor resultado mensal no horizonte",
         "users_m12": "Usuários no mês 12",
         "users_m24": "Usuários no mês 24",
         "users_m36": "Usuários no mês 36",
@@ -252,6 +258,29 @@ def apply_overrides(base: dict, overrides: dict) -> dict:
 # --------------------------------------------------------------------------- #
 # core math
 # --------------------------------------------------------------------------- #
+def derive(p: dict) -> dict:
+    """Marketplace / transactional mode.
+
+    Set `gmv_per_user_monthly` and `take_rate` instead of `arpu_monthly` and the
+    take rate becomes a real lever — including in the sensitivity table, which is
+    the one thing a marketplace founder actually controls.
+
+    `payment_fee_pct_of_gmv` is charged on the GROSS volume, not on what you keep.
+    That distinction sinks most marketplace models: at a 15% take, a 1% fee on GMV
+    eats 6.7% of your revenue — 1/take_rate times worse than it looks. Keep
+    `cogs_per_user_monthly` for the non-payment costs; the fee is added on top.
+    """
+    p = dict(p)
+    gmv, take = p.get("gmv_per_user_monthly"), p.get("take_rate")
+    if gmv is None or take is None:
+        return p
+    gmv, take = float(gmv), float(take)
+    p["arpu_monthly"] = gmv * take
+    base_cogs = float(p.setdefault("_cogs_ex_payment", float(p.get("cogs_per_user_monthly", 0.0))))
+    p["cogs_per_user_monthly"] = base_cogs + gmv * float(p.get("payment_fee_pct_of_gmv", 0.0))
+    return p
+
+
 def unit_economics(p: dict, horizon: int = 36) -> dict:
     arpu = float(p["arpu_monthly"])
     cogs = float(p["cogs_per_user_monthly"])
@@ -299,6 +328,9 @@ def unit_economics(p: dict, horizon: int = 36) -> dict:
 
 
 def simulate(p: dict, horizon: int, one_time: float) -> dict:
+    # A scenario may override one_time_costs (a pessimistic case often should:
+    # rebuilds, compliance work, an agency overrun). Honour it when present.
+    one_time = float(p.get("one_time_costs", one_time))
     arpu = float(p["arpu_monthly"])
     cogs = float(p["cogs_per_user_monthly"])
     tax = float(p.get("tax_rate_on_revenue", 0.0))
@@ -353,8 +385,25 @@ def simulate(p: dict, horizon: int, one_time: float) -> dict:
     def at(month: int, key: str) -> float:
         return rows[month - 1][key] if month <= horizon else float("nan")
 
+    # The founder's own question — "when do I actually earn X a month?" — is the first
+    # row of the dossier README, so compute it here rather than leaving it to be
+    # derived by hand. Requires the target to be sustained, not touched once.
+    target = p.get("founder_income_target_monthly")
+    founders = max(1, int(p.get("founders", 1)))
+    income_month = None
+    if target:
+        need = float(target) * founders
+        for i, r in enumerate(rows):
+            if r["profit"] >= need and all(x["profit"] >= need for x in rows[i:i + 3]):
+                income_month = r["month"]
+                break
+
     return {
         "rows": rows,
+        "founder_income_month": income_month,
+        "founder_income_target_monthly": float(target) if target else None,
+        "founders": founders,
+        "peak_monthly_profit": max(r["profit"] for r in rows),
         "first_profitable_month": first_profit_month,
         "cash_positive_month": cash_positive_month,
         "peak_cash_need": -peak_need,
@@ -389,6 +438,7 @@ def market_block(p: dict) -> dict | None:
 
 
 def sensitivity(base: dict, horizon: int, one_time: float) -> list[dict]:
+    marketplace = "take_rate" in base and "gmv_per_user_monthly" in base
     levers = [
         "arpu_monthly",
         "monthly_churn",
@@ -397,14 +447,19 @@ def sensitivity(base: dict, horizon: int, one_time: float) -> list[dict]:
         "cogs_per_user_monthly",
         "organic_new_users_monthly",
     ]
+    if marketplace:
+        # ARPU is derived, so perturbing it directly would be overwritten; the real
+        # levers here are the take rate and the basket size.
+        levers = ["take_rate", "gmv_per_user_monthly"] + [l for l in levers if l != "arpu_monthly"]
     out = []
-    ref_ue = unit_economics(base, horizon)
-    ref_sim = simulate(base, horizon, one_time)
+    ref_ue = unit_economics(derive(base), horizon)
+    ref_sim = simulate(derive(base), horizon, one_time)
     for lever in levers:
         row = {"lever": lever}
         for label, mult in (("minus20", 0.8), ("plus20", 1.2)):
             p = copy.deepcopy(base)
             p[lever] = float(p[lever]) * mult
+            p = derive(p)
             ue = unit_economics(p, horizon)
             sim = simulate(p, horizon, one_time)
             row[label] = {
@@ -514,6 +569,16 @@ def render_md(result: dict, lang: str) -> str:
     def row(label: str, fn) -> None:
         lines.append(f"| {label} | " + " | ".join(fn(S[n]) for n in names) + " |")
 
+    tgt = S["realistic"]["sim"]["founder_income_target_monthly"]
+    if tgt:
+        nf = S["realistic"]["sim"]["founders"]
+        key = "income_month_multi" if nf > 1 else "income_month_solo"
+        lines.append(
+            f"| **{L[key].format(amt=fmt_money(tgt, cur, lang))}** | "
+            + " | ".join((str(S[n]["sim"]["founder_income_month"]) if S[n]["sim"]["founder_income_month"] else f"**{L['never']}**") for n in names)
+            + " |"
+        )
+        row(L["peak_profit"], lambda s: fmt_money(s["sim"]["peak_monthly_profit"], cur, lang))
     row(L["users_m12"], lambda s: fmt_num(s["sim"]["users_m12"], lang))
     row(L["users_m24"], lambda s: fmt_num(s["sim"]["users_m24"], lang))
     row(L["users_m36"], lambda s: fmt_num(s["sim"]["users_m36"], lang))
@@ -592,7 +657,7 @@ def render_md(result: dict, lang: str) -> str:
     lines.append("")
     lines.append(f"| {L['lever']} | {L['pessimistic']} | {L['realistic']} | {L['optimistic']} | {L['note']} |")
     lines.append("|---|---:|---:|---:|---|")
-    keys = list(result["scenarios"]["realistic"]["params"].keys())
+    keys = [k for k in result["scenarios"]["realistic"]["params"] if not k.startswith("_") and k != "one_time_costs"]
     notes = result.get("notes", {})
     for k in keys:
         vals = []
@@ -600,14 +665,15 @@ def render_md(result: dict, lang: str) -> str:
             v = result["scenarios"][n]["params"].get(k)
             if isinstance(v, list):
                 vals.append(f"[{fmt_num(v[0], lang)}…{fmt_num(v[-1], lang)}]")
-            elif isinstance(v, float) and k in ("monthly_churn", "tax_rate_on_revenue", "som_share_year3"):
+            elif isinstance(v, float) and k in ("monthly_churn", "tax_rate_on_revenue", "som_share_year3", "take_rate", "payment_fee_pct_of_gmv"):
                 vals.append(fmt_pct(v, lang))
             elif isinstance(v, (int, float)):
                 vals.append(fmt_num(v, lang, 2 if abs(v) < 10 and v != int(v) else 0))
             else:
                 vals.append(str(v))
         lines.append(f"| {k} | " + " | ".join(vals) + f" | {notes.get(k, '')} |")
-    lines.append(f"| one_time_costs | | {fmt_money(result['one_time_costs'], cur, lang)} | | {notes.get('one_time_costs', '')} |")
+    ot = [result["scenarios"][n]["params"].get("one_time_costs", result["one_time_costs"]) for n in names]
+    lines.append(f"| one_time_costs | " + " | ".join(fmt_money(v, cur, lang) for v in ot) + f" | {notes.get('one_time_costs', '')} |")
     lines.append("")
 
     # warnings
@@ -668,10 +734,13 @@ def build(model: dict, lang: str) -> dict:
     base = model.get("base")
     if not isinstance(base, dict):
         fail("model.json needs a 'base' object (the realistic scenario)")
-    missing = [k for k in REQUIRED_BASE if k not in base]
+    marketplace = "gmv_per_user_monthly" in base and "take_rate" in base
+    required = [k for k in REQUIRED_BASE if not (marketplace and k == "arpu_monthly")]
+    missing = [k for k in required if k not in base]
     if missing:
-        fail(f"base is missing required keys: {', '.join(missing)}")
-    for k in ("monthly_churn", "tax_rate_on_revenue", "som_share_year3"):
+        hint = "" if marketplace else " (for a marketplace, set gmv_per_user_monthly + take_rate instead of arpu_monthly)"
+        fail(f"base is missing required keys: {', '.join(missing)}{hint}")
+    for k in ("monthly_churn", "tax_rate_on_revenue", "som_share_year3", "take_rate", "payment_fee_pct_of_gmv"):
         if k in base and not (0 <= float(base[k]) <= 1):
             fail(f"base.{k} must be a fraction between 0 and 1 (got {base[k]})")
 
@@ -695,6 +764,7 @@ def build(model: dict, lang: str) -> dict:
         warnings.append(LABELS[lang]["defaults_used"].format(name="optimistic"))
 
     scenarios = {}
+    params = {k: derive(v) for k, v in params.items()}
     for name, p in params.items():
         ue = unit_economics(p, horizon)
         sim = simulate(p, horizon, one_time)
