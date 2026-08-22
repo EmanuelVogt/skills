@@ -1,6 +1,6 @@
 # skills
 
-Agent skills for people who build with AI: deciding what is worth building, and staying in control of what got built.
+Agent skills for people who build with AI.
 
 | Skill | What it does |
 |---|---|
@@ -8,22 +8,20 @@ Agent skills for people who build with AI: deciding what is worth building, and 
 | [`debt`](debt/SKILL.md) | Register technical or cognitive debt about AI-written code. Investigates definition, every call site and the design rationale, then writes a structured entry to a personal ledger. |
 | [`crash-course`](crash-course/SKILL.md) | Write a study document — history, ELI5, how it works, how *your* project uses it, trade-offs, alternatives, references — about a registered debt or any topic. |
 
-## Why
+Each skill stands alone. Install only the one you want.
 
-AI makes it cheap to build the wrong thing, and then hard to understand the thing you built.
+---
 
-- **Before the code** — the cost of an idea is months of your life, and the expensive failure is a false positive: an encouraging analysis of something that was never going to work. `grill-my-idea` is the counterweight. Its default verdict is not "promising".
-- **Tech debt** — shortcuts you know about: no tests, magic numbers, a hack that works today.
-- **Cognitive debt** — code that may be fine, but you couldn't explain it. Paying it means *understanding*, not rewriting.
+# grill-my-idea
 
-`grill-my-idea` decides whether to start. `debt` catalogues what starting cost you. `crash-course` pays the cognitive kind.
+A skeptical business analyst for an idea you are thinking about building.
+
+The expensive failure is a false positive: an encouraging analysis of something that was never going to work. Optimism is the default failure mode of founders and language models alike, so this skill is built as the counterweight. Its default verdict is not "promising".
 
 ## Install
 
 ```sh
 npx skills add EmanuelVogt/skills@grill-my-idea
-npx skills add EmanuelVogt/skills@debt
-npx skills add EmanuelVogt/skills@crash-course
 ```
 
 ## Use
@@ -34,25 +32,17 @@ npx skills add EmanuelVogt/skills@crash-course
 /grill-my-idea                      # then paste the pitch; it grills you in rounds
 ```
 
-```
-/debt src/billing/retry.ts          # register — the skill investigates, you confirm
-/debt list                          # open entries
-/debt pay DEBT-007                  # mark as paid, keeps history
-/crash-course DEBT-007              # study material from a registered debt
-/crash-course event sourcing        # or any topic
-```
+Say *"don't ask me anything, assume what you need"* and it runs end to end on its own, listing every assumption it made on your behalf. Output goes to `ideas/<slug>/` in the working directory.
 
-`grill-my-idea` writes to `ideas/<slug>/` in the working directory. `debt` and `crash-course` write to `.learning/` at the project root — personal, added to `.gitignore` automatically.
-
-## How grill-my-idea works
+## How it works
 
 Seven phases. It asks you only what it cannot look up, and looks up everything else.
 
 1. **Intake** — slug, folder, the pitch saved verbatim.
-2. **Grill** — the idea becomes a tree of assumptions, worked in rounds of 2–4 questions, each with a recommended answer. Every claim is tagged `[fact]`, `[belief]`, `[assumption]` or `[unknown]`. Say "don't ask me" and it fills the tree itself, then lists the assumptions it made on your behalf.
+2. **Grill** — the idea becomes a tree of assumptions, worked in rounds of 2–4 questions, each with a recommended answer. Every claim is tagged `[fact]`, `[belief]`, `[assumption]` or `[unknown]`, so you can see which parts of your plan are load-bearing guesses.
 3. **Research** — 25–40+ searches across ten dimensions, in parallel: market size, competitors home and abroad, demand evidence, pricing, regulation and tax, cost benchmarks, channels and CAC, and the graveyard of companies that tried this before. PT-BR queries for Brazilian sources, EN for international.
 4. **Model** — cost to run, unit economics, break-even and three scenarios, computed by a script, not guessed.
-5. **Judge** — tarpit patterns, five forces, red flags by severity, a pre-mortem, and a weighted scorecard with override rules.
+5. **Judge** — tarpit patterns, five forces, red flags by severity, a pre-mortem, and a weighted scorecard with override rules that a fatal weakness cannot be averaged away from.
 6. **Go-to-market** — positioning, beachhead, channels with CAC, and a 30/60/90 validation plan with kill criteria.
 7. **Compile** — the dossier.
 
@@ -124,7 +114,70 @@ It refuses to flatter you. When the ceiling sits below the break-even, or the su
   which is believable.
 ```
 
-Locale: the default home market is Brazil, so the cost, tax and channel guidance is concrete — CLT vs PJ, Simples Nacional Anexo III vs V and Fator R, Pix/boleto/card fees, WhatsApp Business Platform pricing, IBGE and Receita Federal CNPJ counts, Reclame Aqui as a research source. Name another country and it swaps to that country's registries and rails. The dossier is written in English regardless of the language you write in.
+## Locale
+
+The default home market is Brazil, so the cost, tax and channel guidance is concrete — CLT vs PJ, Simples Nacional Anexo III vs V and Fator R, Pix/boleto/card fees, WhatsApp Business Platform pricing, IBGE and Receita Federal CNPJ counts, Reclame Aqui as a research source. Name another country and it swaps to that country's registries and rails. The dossier is written in English regardless of the language you write in.
+
+---
+
+# debt · crash-course
+
+Two skills for staying in control of code an AI wrote. They work together: `debt` catalogues, `crash-course` pays.
+
+## Why
+
+AI writes code faster than you can understand it. Two things pile up:
+
+- **Tech debt** — shortcuts you know about: no tests, magic numbers, a hack that works today.
+- **Cognitive debt** — code that may be fine, but you couldn't explain it. Paying it means *understanding*, not rewriting.
+
+`debt` catalogues both. `crash-course` pays the cognitive kind.
+
+## Install
+
+```sh
+npx skills add EmanuelVogt/skills@debt
+npx skills add EmanuelVogt/skills@crash-course
+```
+
+## Use
+
+```
+/debt src/billing/retry.ts          # register — the skill investigates, you confirm
+/debt list                          # open entries
+/debt pay DEBT-007                  # mark as paid, keeps history
+/crash-course DEBT-007              # study material from a registered debt
+/crash-course event sourcing        # or any topic
+```
+
+Everything is written to `.learning/` at the project root — personal, added to `.gitignore` automatically.
+
+## Ledger entry
+
+```markdown
+## DEBT-007 · cog · open · 2026-08-21
+
+**Concept:** exponential backoff with jitter
+**Where:** src/billing/retry.ts:40-88
+**Usages:**
+- src/billing/charge.ts:112 — retry around Stripe charge
+- src/jobs/invoice.ts:58 — retry around email send (questionable usage: not idempotent)
+
+**What the AI did:** wraps a call in up to 5 retries, waiting base × 2^n with random jitter.
+**Why it was done this way:** Stripe returns 429 under end-of-month load _(source: commit 3f2a1c)_
+**Why it is debt:** nobody on the team can justify base=200ms / max=5 or predict behaviour under load.
+**To pay:** read crash course, answer self-test, then either document the limits or tune them.
+**Paid when:** rationale lives next to the constants, or limits changed with a load test.
+**Crash course:** —
+```
+
+## Crash course structure
+
+Ten fixed sections, ordered by depth — a non-technical reader stops at 3, a junior dev at 6, a senior reads to the end:
+
+1. In one sentence · 2. Real-world analogy · 3. Why this exists in YOUR project · 4. History · 5. How it works, step by step · 6. Reading the project code · 7. Trade-offs · 8. Alternatives not used · 9. Self-test questions · 10. References
+
+---
 
 ## License
 
