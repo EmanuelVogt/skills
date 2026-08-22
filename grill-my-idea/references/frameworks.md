@@ -325,23 +325,25 @@ The verdict block must state: the game (indie / venture, and which investor univ
 
 ### 9.4 Worked mini-example
 
-Idea: WhatsApp-native scheduling, reminders and Pix pre-payment for small physiotherapy and dental clinics in Brazil, R$149/month. Founder ran operations at a dental chain for four years; can sell, needs a technical partner.
+> **Read this for the mechanics, not for the answer.** The example is deliberately far from the ideas this skill usually sees — mid-market, hardware-attached, sales-led, high ACV, and it scores a GO. If the idea in front of you is a low-ticket SMB subscription, none of these scores transfer; a worked example that resembles the live idea is an anchoring hazard, so score from your own evidence and let the number land where it lands.
+
+Idea: sensor kit plus software that predicts loom and dyeing-line failures for mid-size textile plants in Brazil, R$2,800/month per plant on an annual contract. Founder spent twelve years as a maintenance engineer in the sector; three plants have signed LOIs at that price.
 
 | Dimension | Score | Reasoning |
 |---|---|---|
-| Problem severity | 4 | No-shows cost clinics 15–25% of revenue; they already pay for generic scheduling tools and receptionists' time to chase confirmations |
-| Market / SOM (indie game) | 3 | ~60k small clinics in the segment; 1,000 customers = R$149k MRR — strong indie, no venture math |
-| Why-now | 3 | Pix pre-payment + WhatsApp Business API pricing changes make pre-charging cheap; level-2 current |
-| Competition & moat | 2 | Crowded scheduling category; incumbents rated ~6–7; the wedge is pre-payment, copyable within a year |
-| Unit economics | 4 | CAC ~R$600 via dental-supply partnerships; churn 3%/mo; gross margin 80% → LTV ≈ R$3,970, LTV:CAC ≈ 6.6, payback ≈ 5 months |
-| Founder fit | 3 | Lived the pain and can sell; cannot build — depends on finding a partner |
-| GTM feasibility | 3 | Partnership channel is plausible but unproven; founder can name 12 clinics |
-| Regulatory & execution | 3 | LGPD sensitive health data; standard build, but no engineer yet |
+| Problem severity | 5 | Unplanned downtime stops a line at a known hourly cost; plants already pay overtime crews and carry spare-part inventory to cope. They are spending today |
+| Market / SOM (indie game) | 3 | ~4,000 plants in the size band; 120 customers = R$336k MRR. A strong indie or a small-fund venture, not a R$100M path |
+| Why-now | 4 | LTE-M coverage plus sensor cost collapse made per-machine instrumentation affordable in the last two years; close to level 1 |
+| Competition & moat | 4 | Enterprise MES suites cost 10× and ignore this size band; failure signatures accumulate into a data moat the incumbent cannot buy |
+| Unit economics | 5 | ACV R$33.6k, CAC ~R$8k via association events, churn <1%/mo, gross margin 72% after hardware amortisation → LTV:CAC ≈ 4.2, payback ≈ 5 months |
+| Founder fit | 5 | Twelve years doing the job, an earned secret about which failures are predictable, and can both spec and sell |
+| GTM feasibility | 4 | Three LOIs, a named association channel, and a segment dense enough to reference |
+| Regulatory & execution | 3 | NR-12 machine-safety adjacency; hardware install and field support are real execution risk |
 
-Weighted: (20×4 + 15×3 + 10×3 + 10×2 + 15×4 + 10×3 + 12×3 + 8×3) / 100 = 325/100 = **3.25** → VALIDATE-FIRST.
-Overrides: no BLOCKER; one MAJOR (crowded, incumbents ~6–7); no paying customers yet → rule 7 also caps at VALIDATE-FIRST. No change.
+Weighted: (20×5 + 15×3 + 10×4 + 10×4 + 15×5 + 10×5 + 12×4 + 8×3) / 100 = 422/100 = **4.22** → GO.
+Overrides: no BLOCKER; no MAJOR unaddressed; rule 7 needs evidence and three signed LOIs at the real price supply it. No change.
 
-Verdict: **VALIDATE-FIRST, indie game** (target R$100–150k MRR, bootstrapped, profitable in ~12 months). Likeliest killer: clinics treat it as a feature and the incumbent ships Pix pre-payment first, so the wedge evaporates before 200 customers. Experiments: (1) presell 10 of the 12 named clinics at R$149 with a Pix deposit — kill if fewer than 3 pay; (2) run reminders + pre-payment manually for those 3 for 30 days — kill if no-show reduction is under 30%; (3) secure a technical co-founder or contractor with a 90-day build scope — kill if nobody is committed within 45 days.
+Verdict: **GO, indie game** (target R$300k+ MRR, bootstrapped on annual prepay, profitable inside 12 months). Likeliest killer: this is a hardware archetype wearing SaaS clothes — cash trapped in sensor inventory and field installs, so growth consumes cash even at a healthy margin; a bad batch or a slow install queue stalls it. Experiments: (1) convert the three LOIs to paid annual contracts with 50% upfront — kill if fewer than two convert in 45 days; (2) instrument one line and predict a real failure before it happens — kill if no true positive in 60 days; (3) price the install and support of plant four end to end — kill if gross margin lands under 50% once field time is loaded.
 
 ### 9.5 Consistency rules
 
