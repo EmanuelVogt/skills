@@ -61,6 +61,8 @@ Use it when no category exists yet, then check that the implied price survives c
 
 ### 2.3 Worked example (BRL)
 
+> The numbers below exist to show the *arithmetic* — the filter chain, the reconciliation ratio, the SOM share. Do not carry any of them into a live analysis, even if the idea looks similar; count your own segment.
+
 Idea: agenda + cobrança automática para clínicas de fisioterapia, R$ 99/month.
 
 - Bottom-up TAM: ~25,000 fisioterapia clinics/consultórios with active CNPJ (CNAE 8650-0/04 cross-checked with CREFITO registrations) `[data]` × R$ 99 × 12 = R$ 1,188/yr → **TAM ≈ 25,000 clinics, R$ 30M/yr**.
