@@ -7,6 +7,7 @@ Agent skills for people who build with AI.
 | [`grill-my-idea`](grill-my-idea/SKILL.md) | Interrogate a business idea, then research it for real — TAM/SAM/SOM, competitors at home and abroad, cost to run, break-even, three scenarios — and issue a verdict: GO, VALIDATE-FIRST, PIVOT or KILL. Writes a full dossier to `ideas/<slug>/`. |
 | [`debt`](debt/SKILL.md) | Register technical or cognitive debt about AI-written code. Investigates definition, every call site and the design rationale, then writes a structured entry to a personal ledger. |
 | [`crash-course`](crash-course/SKILL.md) | Write a study document — history, ELI5, how it works, how *your* project uses it, trade-offs, alternatives, references — about a registered debt or any topic. |
+| [`ca-spec-driven`](ca-spec-driven/SKILL.md) | Spec-driven feature work in four auto-sized phases — Specify, Design, Tasks, Execute — with Execute delegated to parallel workers in waves and closed by an independent Verifier. Writes specs, decisions and self-improving lessons to `.specs/`. |
 
 Each skill stands alone. Install only the one you want.
 
@@ -179,6 +180,48 @@ Ten fixed sections, ordered by depth — a non-technical reader stops at 3, a ju
 
 ---
 
+# ca-spec-driven
+
+Spec-driven development for agents that ship features, not prose. Four phases — Specify, Design, Tasks, Execute — sized to the feature's real complexity: a three-file change gets a one-liner spec and runs inline; a multi-component feature gets requirement IDs, an architecture pass and a task breakdown. The pipeline decides its own depth; you never fill in ceremony.
+
+The distinctive part is Execute. From four tasks up, the window that planned the feature never implements — it becomes an orchestrator that dispatches cheap workers over vertical clusters, waves of them in parallel, one atomic commit per task, a build gate per wave. After the last wave a fresh, independent Verifier (author ≠ verifier, always on, never prompted) checks outcomes against the spec's acceptance criteria with evidence-or-zero and writes the validation report. Tests derive from the spec, never from the implementation.
+
+Derived from **TLC Spec-Driven 3.2.0** by [Felipe Rodrigues](https://github.com/felipfr) (CC-BY-4.0); this fork adds the delegation model — worker waves, cluster parallelism over vertical slices, tier-per-dispatch model selection, English-only artifacts — hardened in production use.
+
+## Install
+
+```sh
+npx skills add EmanuelVogt/skills@ca-spec-driven
+```
+
+The delegation model works best with the four role templates in [`ca-spec-driven/agents/`](ca-spec-driven/agents/) — worker, verifier, scout, runner — copied into your project's `.claude/agents/` (restart the session; Claude Code loads agents at start). Without them the skill says so and runs the same protocol inline, degraded but honest.
+
+## Use
+
+```
+# it triggers on its own phrases — just talk
+specify a cancellation-fee feature
+design it
+break it into tasks
+implement
+validate
+pause work            # snapshot to .specs/STATE.md
+resume work           # picks up from the handoff
+```
+
+## What it leaves behind
+
+```
+.specs/
+├── STATE.md            project memory: decisions log + handoff snapshot
+├── LESSONS.md          self-improving playbook, distilled from verified failures
+└── features/<slug>/    spec.md · context.md · design.md · tasks.md · validation.md
+```
+
+Everything under `.specs/` is written in English regardless of the language you chat in — agents are the only readers, and English artifacts cost ~30–40% fewer tokens per re-read.
+
+---
+
 ## License
 
-MIT
+MIT — except [`ca-spec-driven/`](ca-spec-driven/), which is CC-BY-4.0 as a derivative of TLC Spec-Driven by Felipe Rodrigues.
