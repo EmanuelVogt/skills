@@ -8,7 +8,7 @@ Agent skills for people who build with AI.
 | [`debt`](debt/SKILL.md) | Register technical or cognitive debt about AI-written code. Investigates definition, every call site and the design rationale, then writes a structured entry to a personal ledger. |
 | [`crash-course`](crash-course/SKILL.md) | Write a study document — history, ELI5, how it works, how *your* project uses it, trade-offs, alternatives, references — about a registered debt or any topic. |
 | [`ca-spec-driven`](ca-spec-driven/SKILL.md) | Spec-driven feature work in four auto-sized phases — Specify, Design, Tasks, Execute — with Execute delegated to parallel workers in waves and closed by an independent Verifier. Writes specs, decisions and self-improving lessons to `.specs/`. |
-| [`ca-full-cycle`](ca-full-cycle/SKILL.md) | Research → Plan → Implement → Review with ONE human gate before code: collaborative research (grilling + parallel scouts), then autonomous planning, worker waves with a per-wave verifier, an independent Reviewer, and a human QA loop at the end. Writes the brief, plan and review to `.ca-plans/`. |
+| [`ca-full-cycle`](ca-full-cycle/SKILL.md) | Autonomous feature pipeline with a single approval gate: shape a brief together, then it plans, implements in parallel worker waves and verifies its own work — a verifier per wave, an independent Reviewer, mutation-tested suites — before handing you a QA script. |
 
 Each skill stands alone. Install only the one you want.
 
@@ -225,22 +225,31 @@ Everything under `.specs/` is written in English regardless of the language you 
 
 # ca-full-cycle
 
-`ca-spec-driven`'s lean sibling: the same delegation machinery, one human gate instead of four.
+One command from problem to QA-ready feature. You approve a brief; the pipeline does the rest.
 
-Research → Plan → Implement → Review. The human appears exactly twice: at **Research**, where a raw concept is
-stress-tested first (evidence of the problem, the do-nothing baseline, the simpler alternative —
-it can recommend not building) and the grill runs in rounds (each question grounded in what the
-code scouts found, each with a recommended answer) until one brief — problem, context map, decisions, acceptance criteria with
-proofs — is confirmed; and at **QA**, where you test the shipped feature against a generated QA
-script and every finding is triaged (broken vs. brief → fix wave; new behavior → delta research;
-works as specified → your call). Everything between the two runs alone: a top-tier plan over the
-mapped context, workers in parallel waves with a fresh verifier closing every wave, and an
-independent Reviewer (author ≠ reviewer, evidence-or-zero, mutation sensor) closing the feature.
+**Research is the only phase that needs you.** The skill interrogates the problem in short rounds
+— each question grounded in what its code scouts just found in your repo, each with a recommended
+answer. A vague concept gets stress-tested before anything converges: evidence the problem exists,
+the do-nothing baseline, the simpler alternative — and it will recommend *not building* when that
+is the honest call. The output is a brief: acceptance criteria, each with a declared proof.
+Confirm it, and the autonomous stretch begins.
 
-The economics are the design: scouts are cheap and disposable while every important fact lands in
-the main window; the expensive window plans and orchestrates but never types; workers are tiered
-per dispatch (haiku for mechanics, sonnet by default, opus where domain rules live); the one
-high-tier fresh read comes at the end, where a wrong answer is most expensive.
+**Implementation is parallel — and verified as it lands.** A top-tier plan cuts the work into
+vertical clusters dispatched as waves of parallel workers, each on the cheapest model that can
+carry its risk. One atomic commit per task; tests derived from the acceptance criteria, never
+from the implementation. A fresh verifier closes every wave: runs the gate, checks the delivery
+against the plan, and injects a mutant into the riskiest task — weak tests die in the wave that
+wrote them, not weeks later.
+
+**Nothing ships on trust.** An independent Reviewer (author ≠ reviewer) closes the feature: every
+acceptance criterion traced to a real assertion — evidence or it doesn't count — a full-suite
+gate, mutation testing scaled to the size of the change, flaky tests treated as findings, scope
+drift caught by diffing the delivery against the plan. Then you get a QA script mapped to the
+acceptance criteria; your findings loop back as fix waves until you close the run.
+
+Oversized briefs segment into sequential plans, each shipped and QA'd on its own. Every run is
+resumable from disk state and closes with a ledger entry — wall time, tokens by tier, estimated
+cost — in `.ca-plans/RUNS.md`.
 
 ## Install
 
@@ -248,8 +257,7 @@ high-tier fresh read comes at the end, where a wrong answer is most expensive.
 npx skills add EmanuelVogt/skills@ca-full-cycle
 ```
 
-No agent templates required — it dispatches generic sub-agents with role cards. If
-`ca-spec-driven`'s templates are installed, it uses them.
+No further setup — roles run as generic sub-agents driven by role cards.
 
 ## Use
 
@@ -271,8 +279,6 @@ qa: item 2 failed, the date column is still ISO
     ├── plan.md         tasks, wave plan, gate commands, live statuses (the resume point)
     └── review.md       Reviewer report: per-AC evidence, sensor result + the QA log
 ```
-
-English artifacts, same rationale as `ca-spec-driven`: agents are the only readers.
 
 ---
 

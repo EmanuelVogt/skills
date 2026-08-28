@@ -51,12 +51,10 @@ orchestrator reads its current phase reference whole.
    question. Declared limit: the wave verifier anchors on the plan, the Reviewer on the brief — a
    wrong plan is caught by the brief-anchored close; a wrong brief is caught only by human QA.
    That is what QA is for.
-6. **Everything this skill writes is English.** Every artifact under `.ca-plans/` (`research.md`,
-   `plan.md`, `review.md`), feature slugs, task titles, payloads, summaries and verdicts — agents
-   are the only readers and re-read them for the life of the run; another language costs ~30–40 %
-   more tokens per read. The chat reply follows the user's language; the QA script is chat, so it
-   speaks the user's language too. Quote the original only for product text (a UI label, an error
-   message, a domain term with no English equivalent).
+6. **Artifacts in English, chat in the user's language.** Everything under `.ca-plans/` plus
+   slugs, payloads, summaries and verdicts is English — agents are the only readers, and English
+   re-reads are cheaper. The QA script is chat, so it follows the user; product text (UI labels,
+   error messages) is quoted as-is.
 
 ## Sizing
 
