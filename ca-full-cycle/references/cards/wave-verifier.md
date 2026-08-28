@@ -12,7 +12,7 @@ wave touches.
 1. **Wave gate — run it yourself, log on disk.** The exact command from the payload
    (`wave` scope, or `full-unit` when the plan marked the wave so):
    ```bash
-   LOG=$(mktemp -t rpir-wave.XXXXXX); cd <checkout> && <cmd> > "$LOG" 2>&1; echo exit=$?
+   LOG=$(mktemp -t fc-wave.XXXXXX); cd <checkout> && <cmd> > "$LOG" 2>&1; echo exit=$?
    grep -n "FAIL\|✕\|error" "$LOG" | head -30
    ```
    Non-zero → that is already a gap; finish the other checks anyway (one round-trip, full picture).

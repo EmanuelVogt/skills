@@ -106,7 +106,7 @@ if any commit lands after it; never per task, never per wave).
 # [Feature] — Plan
 
 ## Execution Protocol (MANDATORY)
-Implement with the `ca-rpir` skill — activate it by name and follow its Implement flow and
+Implement with the `ca-full-cycle` skill — activate it by name and follow its Implement flow and
 Critical Rules. If it cannot be activated, STOP and tell the user.
 
 **Status:** Research → Planning → Implementing (wave k/N) → Review → QA → Done   ← the run's

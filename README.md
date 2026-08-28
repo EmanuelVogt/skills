@@ -8,7 +8,7 @@ Agent skills for people who build with AI.
 | [`debt`](debt/SKILL.md) | Register technical or cognitive debt about AI-written code. Investigates definition, every call site and the design rationale, then writes a structured entry to a personal ledger. |
 | [`crash-course`](crash-course/SKILL.md) | Write a study document — history, ELI5, how it works, how *your* project uses it, trade-offs, alternatives, references — about a registered debt or any topic. |
 | [`ca-spec-driven`](ca-spec-driven/SKILL.md) | Spec-driven feature work in four auto-sized phases — Specify, Design, Tasks, Execute — with Execute delegated to parallel workers in waves and closed by an independent Verifier. Writes specs, decisions and self-improving lessons to `.specs/`. |
-| [`ca-rpir`](ca-rpir/SKILL.md) | Research → Plan → Implement → Review with ONE human gate before code: collaborative research (grilling + parallel scouts), then autonomous planning, worker waves with a per-wave verifier, an independent Reviewer, and a human QA loop at the end. Writes the brief, plan and review to `.ca-plans/`. |
+| [`ca-full-cycle`](ca-full-cycle/SKILL.md) | Research → Plan → Implement → Review with ONE human gate before code: collaborative research (grilling + parallel scouts), then autonomous planning, worker waves with a per-wave verifier, an independent Reviewer, and a human QA loop at the end. Writes the brief, plan and review to `.ca-plans/`. |
 
 Each skill stands alone. Install only the one you want.
 
@@ -223,7 +223,7 @@ Everything under `.specs/` is written in English regardless of the language you 
 
 ---
 
-# ca-rpir
+# ca-full-cycle
 
 `ca-spec-driven`'s lean sibling: the same delegation machinery, one human gate instead of four.
 
@@ -245,7 +245,7 @@ high-tier fresh read comes at the end, where a wrong answer is most expensive.
 ## Install
 
 ```sh
-npx skills add EmanuelVogt/skills@ca-rpir
+npx skills add EmanuelVogt/skills@ca-full-cycle
 ```
 
 No agent templates required — it dispatches generic sub-agents with role cards. If
@@ -254,9 +254,9 @@ No agent templates required — it dispatches generic sub-agents with role cards
 ## Use
 
 ```
-/ca-rpir the export button generates a broken CSV when filters are active
+/ca-full-cycle the export button generates a broken CSV when filters are active
 research this and implement it end to end
-resume rpir
+resume full-cycle
 qa: item 2 failed, the date column is still ISO
 ```
 
@@ -278,4 +278,4 @@ English artifacts, same rationale as `ca-spec-driven`: agents are the only reade
 
 ## License
 
-MIT — except [`ca-spec-driven/`](ca-spec-driven/) and [`ca-rpir/`](ca-rpir/), which are CC-BY-4.0 as derivatives of TLC Spec-Driven by Felipe Rodrigues.
+MIT — except [`ca-spec-driven/`](ca-spec-driven/) and [`ca-full-cycle/`](ca-full-cycle/), which are CC-BY-4.0 as derivatives of TLC Spec-Driven by Felipe Rodrigues.

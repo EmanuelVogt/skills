@@ -1,6 +1,6 @@
 ---
-name: ca-rpir
-description: End-to-end feature pipeline with ONE human gate before code — Research (grilling rounds + parallel code scouts; a raw concept is stress-tested before convergence), then autonomous Plan → Implement → Review: top-tier planning over mapped context, cheap workers in parallel waves, a verifier per wave, an independent Reviewer — closing with a human QA loop. Trigger on "rpir", "research this and implement it", "resolve this end to end", "run the full pipeline", "implement this autonomously", "QA findings", "resume rpir".
+name: ca-full-cycle
+description: End-to-end feature pipeline with ONE human gate before code — Research (grilling rounds + parallel code scouts; a raw concept is stress-tested before convergence), then autonomous Plan → Implement → Review: top-tier planning over mapped context, cheap workers in parallel waves, a verifier per wave, an independent Reviewer — closing with a human QA loop. Trigger on "full cycle", "research this and implement it", "resolve this end to end", "run the full cycle", "implement this autonomously", "QA findings", "resume full-cycle".
 license: CC-BY-4.0
 metadata:
   author: Emanuel Vogt - github.com/EmanuelVogt
@@ -8,7 +8,7 @@ metadata:
   based-on: ca-spec-driven 1.0.0 (same author), itself derived from TLC Spec-Driven 3.2.0 by Felipe Rodrigues (github.com/felipfr), CC-BY-4.0. Keeps the wave/cluster delegation model, the tier-per-dispatch economics and the independent-verification stance; trims four phase gates down to one, adds a per-wave verifier and closes with a human QA loop.
 ---
 
-# CA RPIR — Research · Plan · Implement · Review
+# CA Full-Cycle — Research · Plan · Implement · Review
 
 One human gate before code, one human loop after it. Everything between runs alone.
 

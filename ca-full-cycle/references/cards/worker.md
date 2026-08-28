@@ -18,7 +18,7 @@ names (`plan.md "### T<n>"`, `"## Gate Commands"`, the `research.md` AC/D-nn ids
    to your task.
 4. **Scoped gate, run it yourself, log on disk** — the log never enters your context:
    ```bash
-   LOG=$(mktemp -t rpir-run.XXXXXX); cd <checkout> && <cmd> > "$LOG" 2>&1; echo exit=$?
+   LOG=$(mktemp -t fc-run.XXXXXX); cd <checkout> && <cmd> > "$LOG" 2>&1; echo exit=$?
    grep -n "FAIL\|✕\|error" "$LOG" | head -30   # or: tail -n 80 "$LOG"
    ```
    Quick/full as the payload says, scoped to your files. **Never** a project-wide typecheck (it
