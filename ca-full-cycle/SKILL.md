@@ -1,6 +1,6 @@
 ---
 name: ca-full-cycle
-description: End-to-end feature pipeline with ONE human gate before code — Research (grilling rounds + parallel code scouts; a raw concept is stress-tested before convergence), then autonomous Plan → Implement → Review: top-tier planning over mapped context, cheap workers in parallel waves, a verifier per wave, an independent Reviewer — closing with a human QA loop. Trigger on "full cycle", "research this and implement it", "resolve this end to end", "run the full cycle", "implement this autonomously", "QA findings", "resume full-cycle".
+description: End-to-end feature pipeline with ONE human gate before code — Research (grilling rounds + parallel code scouts; a raw concept is stress-tested before convergence), then autonomous Plan → Implement → Review — top-tier planning over mapped context, cheap workers in parallel waves, a verifier per wave, an independent Reviewer — closing with a human QA loop. Trigger on "full cycle", "research this and implement it", "resolve this end to end", "run the full cycle", "implement this autonomously", "QA findings", "resume full-cycle".
 license: CC-BY-4.0
 metadata:
   author: Emanuel Vogt - github.com/EmanuelVogt
