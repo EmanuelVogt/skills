@@ -4,7 +4,7 @@ description: End-to-end feature pipeline with ONE human gate before code — Res
 license: CC-BY-4.0
 metadata:
   author: Emanuel Vogt - github.com/EmanuelVogt
-  version: 1.0.0
+  version: 1.1.0
   based-on: ca-spec-driven 1.0.0 (same author), itself derived from TLC Spec-Driven 3.2.0 by Felipe Rodrigues (github.com/felipfr), CC-BY-4.0. Keeps the wave/cluster delegation model, the tier-per-dispatch economics and the independent-verification stance; trims four phase gates down to one, adds a per-wave verifier and closes with a human QA loop.
 ---
 
@@ -70,6 +70,7 @@ No ceremony table — the task count decides, after Plan:
 ```
 .ca-plans/
 ├── DECISIONS.md        # cross-run project decisions — lean AD log (below)
+├── LESSONS.md          # cross-run error ledger — escaped bugs and their guards (review.md § 3.5)
 ├── RUNS.md             # one entry per completed run: size, wall time, tokens, est. cost (review.md § Closeout)
 └── [feature]/          # short English kebab-case slug (guest-agenda-load, not a translated one)
     ├── research.md     # the brief: problem, context map, decisions, ACs with proofs
@@ -91,6 +92,16 @@ Plan settles something future runs must conform to (a convention, a boundary, a 
 feature-local D-nn stay in the run's `research.md`. Read at the start of every Research; an
 `active` AD is a constraint the new brief conforms to or explicitly supersedes, never silently
 ignores.
+
+**LESSONS.md is the error ledger across runs.** One line per escaped-bug pattern:
+`L-nn · <layer: type|test|static-guard|tripwire|lesson> · <pattern> · guard: <file/commit> ·
+<run slug, date> · hits: <n>`. Appended by the QA retro (review.md § 3.5), read at the start of
+every Research next to DECISIONS.md. A recurrence is never a new line — it increments `hits` and
+escalates the guard at least one layer up the ladder (type > test > static-guard > tripwire >
+lesson): hits: 2 buys a cheap enforcement (a tripwire or a regression test), hits: 3 forces a hard
+one (a static-guard script or a type-level constraint). A pattern already guarded at `type` that
+recurs means the guard was wrong, not weak — replace it. Recurrence never produces another
+document; it produces a stronger guard.
 
 ## Phases
 

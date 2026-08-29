@@ -13,7 +13,9 @@ here: making the problem understood. Spend the questions here or pay for them as
 Take the user's statement as-is. Read `.ca-plans/DECISIONS.md` first if it exists — every `active`
 AD-nn is a standing constraint: the brief conforms to it or explicitly supersedes it (mark the old
 line `superseded by AD-mm`, append the new one), never silently ignores it; ground scouts and grill
-questions on the ADs that touch this feature. Then create `.ca-plans/[feature]/` (short English
+questions on the ADs that touch this feature. Read `.ca-plans/LESSONS.md` next if it exists —
+every lesson is a known failure mode: ground scouts on the ones touching this feature's area and
+carry the relevant `L-nn` into the brief as constraints. Then create `.ca-plans/[feature]/` (short English
 kebab-case slug) and start two files: `research.md` from the template below with
 `Status: Research`, and the `plan.md` stub — `Status: Research`, `Started: <ISO datetime>`, brief
 pointer — so the run is discoverable by resume from minute one. One line to the user: the slug and

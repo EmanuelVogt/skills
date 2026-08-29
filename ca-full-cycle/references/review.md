@@ -68,14 +68,37 @@ step. ≤10 steps — past that, group by flow.
 
 Fix machinery inherits every Implement rule (bounded 3 attempts per fix, tier escalation, git
 protocol). QA rounds themselves are unbounded — the human closes the loop, not a counter. Log each
-round in `review.md` under `## QA Log` (round, findings, route taken, fix commits) — one line per
-finding, orchestrator writes it.
+round in `review.md` under `## QA Log` — one line per finding, in the § 3.5 marker format,
+orchestrator writes it.
+
+## 3.5. QA retro — every escaped bug leaves a guard
+
+A finding from § 3's first row (broken vs. an AC) that shipped through Implement and Review is an
+**escaped bug**: the pipeline had two machine checks and missed it. Its fix is not closed until
+the retro closes — three outputs, written with the fix, never deferred:
+
+1. **Root cause, one line** — the pattern, not the instance ("silent-drop filter on enum-keyed
+   grouping", not "briefs missing from sidebar").
+2. **A guard, on the highest layer the pattern admits** — `type` (the compiler forbids it) >
+   `test` (regression in the fix commit) > `static-guard` (a check-script rule) > `tripwire` (a
+   one-line rule re-read every session) > `lesson` (nothing automatable — the entry says why).
+   The guard lands in the same fix cluster as the fix itself.
+3. **A ledger line** in `.ca-plans/LESSONS.md` (created on first use, format in SKILL.md
+   § *.ca-plans Structure*). A recurring pattern is never a new line — increment its `hits` and
+   escalate per SKILL.md: the recurrence just proved the current layer insufficient.
+
+Findings routed as scope (§ 3 row 2) or preference (row 3) take no retro. Every QA Log finding
+line carries a closing marker:
+`- F<n> · round <k> · <finding> · <route + fix commits> · → <L-nn | brief-error | preference>`.
+A `Status: Done` with an unmarked finding line is an unfinished retro — the retro-ledger hook
+blocks it where installed; where it is not, the rule binds all the same.
 
 ## 4. Closeout — on "qa ok"
 
 1. Any fix commit since the last full-suite run → ONE closing Final gate (log-on-disk); red →
    back to § 3, the finding is real.
-2. `plan.md` header → `Status: Done`; `review.md` QA Log closed with the final round.
+2. `plan.md` header → `Status: Done`; `review.md` QA Log closed with the final round, every
+   finding line carrying its § 3.5 marker.
 3. **Run report** — append one entry to `.ca-plans/RUNS.md` from what the run already recorded
    (wave-row metrics + `Started:`); a number the harness never surfaced is `n/a`, never invented:
 
@@ -88,7 +111,8 @@ finding, orchestrator writes it.
 
 4. Segmented run (`research.md` § Segments): mark this segment's line, then author the next
    segment's plan (plan.md § 0) — the confirmed brief is the standing authorization; the next
-   human contact is that segment's QA.
+   human contact is that segment's QA. Each segment closes its own `review.md` — the next
+   segment's Reviewer overwrites it; `RUNS.md` keeps every segment's closeout entry.
 5. One closing line: commit range, AC count delivered, anything consciously left in Assumptions or
    Out of Scope that the user may want as a next run.
 
