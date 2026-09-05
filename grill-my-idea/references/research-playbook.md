@@ -34,7 +34,7 @@ this first, in under five minutes:
   unit, month), which geography first. Everything below is sized against this definition; a vague
   definition is how TAMs get inflated.
 - Note the **current date** and use the current and previous year in queries (reports lag 6–18 months).
-- Create `ideas/<slug>/research/` and an empty `ideas/<slug>/sources.md` now, so incremental saving has
+- Create `ideas/<slug>/work/research/` and an empty `ideas/<slug>/work/sources.md` now, so incremental saving has
   a target.
 
 Order of operations when running sequentially: competitors → demand → market size → pricing and costs →
@@ -45,7 +45,7 @@ vocabulary and price anchors that every other dimension depends on.
 
 Budget 25–40+ searches for the whole job; the minimums below sum to roughly 30–36. A search counts
 only if its result was read (snippet or fetched page) and at least one fact or "nothing found" was
-logged. Save raw notes to `ideas/<slug>/research/<file>.md` as you go.
+logged. Save raw notes to `ideas/<slug>/work/research/<file>.md` as you go.
 
 | # | Dimension | File | Min searches (BR / intl) | Done when |
 |---|---|---|---|---|
@@ -70,7 +70,7 @@ When subagents are available, run 4–6 in parallel. Give each one: the intervie
 geography, business model, price hypothesis), the vocabulary list, the slug, its file path(s), the
 query templates for its dimensions, the source rules (section 5), and the contract format (section 11).
 Each subagent writes its raw file(s) and returns its contract block(s) inline; the parent merges the
-blocks into `research/summary.md` and the bibliographies into `sources.md` (dedupe by URL, renumber).
+blocks into `work/research/summary.md` and the bibliographies into `work/sources.md` (dedupe by URL, renumber).
 
 | Subagent | Dimensions | Returns |
 |---|---|---|
@@ -341,9 +341,10 @@ about a competitor (better), or about people paying (best).
   cite URLs that a search returned or you fetched; mark `[snippet]` when you did not open the page.
 - Fetch the page for any number that matters to the verdict; snippets truncate and drop caveats. When
   a site blocks fetching (LinkedIn, Similarweb, Crunchbase often do), keep the snippet and say so.
-- Save incrementally: append to `ideas/<slug>/research/<dimension>.md` after every 3–5 searches, and
+- Save incrementally: append to `ideas/<slug>/work/research/<dimension>.md` after every 3–5 searches, and
   write the dimension's contract block the moment it is done. Context can run out mid-job; files do not.
-- Keep `ideas/<slug>/sources.md` (dossier root, so readers find it) as a numbered bibliography:
+- Keep `ideas/<slug>/work/sources.md` (rendered as the Sources appendix of `dossier.html`; every `[S12]`
+  citation in the other files links to its row) as a numbered bibliography:
   `[S12] Title — Publisher, data year — URL — accessed YYYY-MM-DD — tier`. Reference IDs from the
   dimension files. Subagents return their own lists; the parent merges, dedupes by URL and renumbers.
 - Log search counts per dimension and the queries that returned nothing; empty results are evidence of
@@ -354,7 +355,7 @@ about a competitor (better), or about people paying (best).
 
 ## 11. Research output contract
 
-Every dimension ends with this block at the top of its file and copied into `research/summary.md`.
+Every dimension ends with this block at the top of its file and copied into `work/research/summary.md`.
 The financial model and the verdict read only these blocks and the model-inputs table, so a finding
 that is not in the block does not exist for them.
 

@@ -69,7 +69,7 @@ Work the tree in **rounds**:
    explicitly says "assume and go" — then record the assumption and proceed
    (§7).
 
-Save the tree to `ideas/<slug>/01-interview.md` after **every** round, not at the
+Save the tree to `ideas/<slug>/work/01-interview.md` after **every** round, not at the
 end. Interviews get interrupted; context windows get compacted.
 
 ## 3. The assumption tree (dimensions)

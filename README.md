@@ -4,7 +4,7 @@ Agent skills for people who build with AI.
 
 | Skill | What it does |
 |---|---|
-| [`grill-my-idea`](grill-my-idea/SKILL.md) | Interrogate a business idea, then research it for real — TAM/SAM/SOM, competitors at home and abroad, cost to run, break-even, three scenarios — and issue a verdict: GO, VALIDATE-FIRST, PIVOT or KILL. Writes a full dossier to `ideas/<slug>/`. |
+| [`grill-my-idea`](grill-my-idea/SKILL.md) | Interrogate a business idea, then research it for real — TAM/SAM/SOM, competitors at home and abroad, cost to run, break-even, three scenarios — and issue a verdict: GO, VALIDATE-FIRST, PIVOT or KILL. Writes a full dossier to `ideas/<slug>/` — one self-contained `dossier.html` plus its markdown sources. |
 | [`debt`](debt/SKILL.md) | Register technical or cognitive debt about AI-written code. Investigates definition, every call site and the design rationale, then writes a structured entry to a personal ledger. |
 | [`crash-course`](crash-course/SKILL.md) | Write a study document — history, ELI5, how it works, how *your* project uses it, trade-offs, alternatives, references — about a registered debt or any topic. |
 | [`ca-spec-driven`](ca-spec-driven/SKILL.md) | Spec-driven feature work in four auto-sized phases — Specify, Design, Tasks, Execute — with Execute delegated to parallel workers in waves and closed by an independent Verifier. Writes specs, decisions and self-improving lessons to `.specs/`. |
@@ -34,7 +34,7 @@ npx skills add EmanuelVogt/skills@grill-my-idea
 /grill-my-idea                      # then paste the pitch; it grills you in rounds
 ```
 
-Say *"don't ask me anything, assume what you need"* and it runs end to end on its own, listing every assumption it made on your behalf. Output goes to `ideas/<slug>/` in the working directory.
+Say *"don't ask me anything, assume what you need"* and it runs end to end on its own, listing every assumption it made on your behalf. Output goes to `ideas/<slug>/` in the working directory: a single `dossier.html` to open, share or print, with the markdown sources under `work/`.
 
 ## How it works
 
@@ -54,19 +54,29 @@ Every number carries `[data]`, `[benchmark]`, `[estimate]` or `[guess]` plus a s
 
 ```
 ideas/<slug>/
+├── dossier.html              the deliverable: one self-contained page — open it, share it, print it
 ├── README.md                 verdict, the numbers, the likeliest killer, next 30 days
-├── 00-intake.md              your pitch, verbatim
-├── 01-interview.md           the assumption tree and what was settled vs. assumed
-├── 02-market.md              TAM/SAM/SOM home + international, why-now, regulation
-├── 03-competitors.md         landscape, positioning map, what reviews say is missing, the graveyard
-├── 04-customer-and-demand.md ICP, jobs-to-be-done, evidence of pain, willingness to pay
-├── 05-financial-model.md     cost to run, unit economics, break-even, three scenarios
-├── 06-go-to-market.md        positioning, beachhead, channels & CAC, first 100 customers
-├── 07-risks-and-verdict.md   red flags, five forces, pre-mortem, scorecard, the verdict
-├── 08-validation-plan.md     30/60/90 experiments with go and kill criteria
 ├── model.json                re-runnable model inputs
-├── sources.md                every URL, with access date and a trust tier
-└── research/                 raw notes per dimension
+└── work/                     the markdown the page is compiled from
+    ├── 00-intake.md              your pitch, verbatim
+    ├── 01-interview.md           the assumption tree and what was settled vs. assumed
+    ├── 02-market.md              TAM/SAM/SOM home + international, why-now, regulation
+    ├── 03-competitors.md         landscape, positioning map, what reviews say is missing, the graveyard
+    ├── 04-customer-and-demand.md ICP, jobs-to-be-done, evidence of pain, willingness to pay
+    ├── 05-financial-model.md     cost to run, unit economics, break-even, three scenarios
+    ├── 06-go-to-market.md        positioning, beachhead, channels & CAC, first 100 customers
+    ├── 07-risks-and-verdict.md   red flags, five forces, pre-mortem, scorecard, the verdict
+    ├── 08-validation-plan.md     30/60/90 experiments with go and kill criteria
+    ├── model_output.json         every number the model produced, month by month
+    ├── sources.md                every URL, with access date and a trust tier
+    └── research/                 raw notes per dimension
+```
+
+`dossier.html` is built from those files by `scripts/build_dossier.py` — verdict banner, three scenario cards, customers-and-cash charts, the sensitivity tornado, re-costed pivots, every section, sources and research notes in a single file with no external dependencies. It renders in light and dark, prints to PDF, and every `[data]` / `[estimate]` / `[guess]` tag and `[S12]` citation becomes a chip or a link.
+
+```sh
+python3 grill-my-idea/scripts/build_dossier.py ideas/<slug>             # → ideas/<slug>/dossier.html
+python3 grill-my-idea/scripts/build_dossier.py ideas/<slug> --lang pt   # Portuguese labels
 ```
 
 The README opens with the answer, not a build-up:
@@ -94,7 +104,7 @@ Two rules make the difference between a report and a decision. Whatever you actu
 
 ```sh
 python3 grill-my-idea/scripts/financial_model.py --example > model.json
-python3 grill-my-idea/scripts/financial_model.py model.json --md tables.md --out model_output.json
+python3 grill-my-idea/scripts/financial_model.py model.json --md work/05-financial-model-tables.md --out work/model_output.json
 ```
 
 It reports break-even four ways, because "how many users do I need" has four different honest answers:

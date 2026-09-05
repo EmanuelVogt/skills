@@ -4,10 +4,13 @@ The dossier is the product. It has to survive being read in six months by
 someone who was not in the conversation — a co-founder, an investor, or the
 founder after they have forgotten the details. Write it in English (unless the
 user explicitly asked for another language), keep the README self-contained,
-and keep every number traceable.
+and keep every number traceable. The reader-facing artefact is `dossier.html`,
+compiled by `scripts/build_dossier.py` from the markdown; the markdown under
+`work/` is the source of truth and the README is the two-page summary that
+stays readable on GitHub.
 
 Contents: 1. Output root & slug · 2. Folder layout · 3. Writing rules ·
-4. File templates · 5. Incremental saving
+4. File templates · 5. Incremental saving · 6. The HTML dossier
 
 ## 1. Output root and slug
 
@@ -27,36 +30,43 @@ Contents: 1. Output root & slug · 2. Folder layout · 3. Writing rules ·
 
 ```
 ideas/<slug>/
-├── README.md                 ← the compiled summary: verdict, numbers, killers, next steps
-├── 00-intake.md              ← the pitch exactly as the user gave it + date + mode
-├── 01-interview.md           ← grilling transcript + labelled assumption tree
-├── 02-market.md              ← home market + international: TAM/SAM/SOM, trends, why-now
-├── 03-competitors.md         ← landscape home + international, comparison table, map, threats
-├── 04-customer-and-demand.md ← ICP, jobs-to-be-done, evidence of pain, willingness to pay
-├── 05-financial-model.md     ← cost to run, pricing, unit economics, break-even, 3 scenarios
-├── 06-go-to-market.md        ← positioning, beachhead, channels & CAC, first 100 customers, launch
-├── 07-risks-and-verdict.md   ← red flags, five forces, pre-mortem, scorecard, verdict rationale
-├── 08-validation-plan.md     ← 30/60/90-day experiments, kill/go criteria, budget
+├── dossier.html              ← THE deliverable: one self-contained page, built by scripts/build_dossier.py
+├── README.md                 ← two-page summary: verdict, numbers, killers, next steps (readable on GitHub)
 ├── model.json                ← inputs for scripts/financial_model.py (re-runnable)
-├── model_output.json         ← full numeric output of the script
-├── sources.md                ← numbered bibliography [S1]…: URL, accessed date, tier, what was taken
-└── research/                 ← raw notes per research dimension, written during research
-    ├── summary.md            ← the contract blocks + consolidated model_inputs table
-    ├── market-size.md
-    ├── competitors.md
-    ├── demand.md
-    ├── customers.md
-    ├── pricing.md
-    ├── regulation.md
-    ├── trends.md
-    ├── costs.md
-    ├── channels.md
-    └── analogues.md
+└── work/                     ← the markdown sources the HTML is compiled from
+    ├── 00-intake.md              ← the pitch exactly as the user gave it + date + mode
+    ├── 01-interview.md           ← grilling transcript + labelled assumption tree
+    ├── 02-market.md              ← home market + international: TAM/SAM/SOM, trends, why-now
+    ├── 03-competitors.md         ← landscape home + international, comparison table, map, threats
+    ├── 04-customer-and-demand.md ← ICP, jobs-to-be-done, evidence of pain, willingness to pay
+    ├── 05-financial-model.md     ← cost to run, pricing, unit economics, break-even, 3 scenarios
+    ├── 05-financial-model-tables.md ← raw tables printed by financial_model.py
+    ├── 06-go-to-market.md        ← positioning, beachhead, channels & CAC, first 100 customers, launch
+    ├── 07-risks-and-verdict.md   ← red flags, five forces, pre-mortem, scorecard, verdict rationale
+    ├── 08-validation-plan.md     ← 30/60/90-day experiments, kill/go criteria, budget
+    ├── model_output.json         ← full numeric output of the script (feeds the cards and charts)
+    ├── model-pivot-<name>.json   ← one per re-costed escape route, plus its _output.json
+    ├── sources.md                ← numbered bibliography [S1]…: URL, accessed date, tier, what was taken
+    └── research/                 ← raw notes per research dimension, written during research
+        ├── summary.md            ← the contract blocks + consolidated model_inputs table
+        ├── market-size.md
+        ├── competitors.md
+        ├── demand.md
+        ├── customers.md
+        ├── pricing.md
+        ├── regulation.md
+        ├── trends.md
+        ├── costs.md
+        ├── channels.md
+        └── analogues.md
 ```
 
 (File names match the dimensions in `research-playbook.md` §2.)
 
-Numbered files read in order; the README is the only one most people will open.
+The root holds three things a reader needs — the page, the summary, the
+re-runnable inputs — and nothing else. The numbered files under `work/` read in
+order and become the sections of `dossier.html`; the README becomes its
+Summary section and its hero (verdict, meta line, pull quote).
 
 ## 3. Writing rules
 
@@ -127,7 +137,7 @@ The first row is not optional. Whatever the founder actually asked — "can I li
 |---|---|---:|---|
 | e.g. Take ~1% of the payments flowing through the product instead of a flat fee | ARPU R$ 149 → R$ 300–400 | 830 → ~180 | VALIDATE-FIRST |
 
-Re-run `financial_model.py` with the changed inputs (keep a `model-pivot-<name>.json` next to `model.json`) so these numbers are real, not rhetorical.
+Re-run `financial_model.py` with the changed inputs (`work/model-pivot-<name>.json`, run with `--out work/model-pivot-<name>_output.json` so `build_dossier.py` renders the pivot in the escape-routes table) so these numbers are real, not rhetorical.
 
 ## What must be true (assumptions the verdict rests on)
 | Assumption | Tag | Confidence | Cheapest experiment to test it |
@@ -144,7 +154,7 @@ Re-run `financial_model.py` with the changed inputs (keep a `model-pivot-<name>.
 (each with a go / kill criterion)
 
 ## Index
-00 intake · 01 interview · 02 market · 03 competitors · 04 customer & demand · 05 financial model · 06 go-to-market · 07 risks & verdict · 08 validation plan · sources.md
+dossier.html (everything below, compiled) · work/: 00 intake · 01 interview · 02 market · 03 competitors · 04 customer & demand · 05 financial model · 06 go-to-market · 07 risks & verdict · 08 validation plan · sources.md
 ```
 
 ### 00-intake.md
@@ -284,9 +294,49 @@ by URL, renumber, and update the IDs in the research files.
 
 ## 5. Incremental saving
 
-Write `00-intake.md` as soon as the idea is understood, `01-interview.md`
-after every round, each `research/*.md` as its research finishes, `model.json`
+Write `work/00-intake.md` as soon as the idea is understood, `work/01-interview.md`
+after every round, each `work/research/*.md` as its research finishes, `model.json`
 before running the script, and the numbered files as each phase closes. The
 README is written last but its skeleton (title, slug, date) can be created at
 intake so the folder is never empty. If the run is interrupted, the next run
-reads what exists and continues from there.
+reads what exists and continues from there. Run `build_dossier.py` when Phase 6
+closes and after any later edit under `work/`; `dossier.html` is derived output,
+never hand-edited.
+
+## 6. The HTML dossier
+
+```bash
+python3 <skill-dir>/scripts/build_dossier.py ideas/<slug>            # → ideas/<slug>/dossier.html
+python3 <skill-dir>/scripts/build_dossier.py ideas/<slug> --lang pt  # Portuguese page chrome
+python3 <skill-dir>/scripts/build_dossier.py ideas/<slug> --no-research --out /tmp/x.html
+```
+
+Standard library only. It reads the README, `work/*.md`, `work/sources.md`,
+`work/model_output.json` and every `work/model-pivot-*_output.json`, and writes
+one HTML file with inline CSS, inline SVG charts and no external requests — it
+opens from disk, survives e-mail, prints to PDF (Ctrl/Cmd + P) and follows the
+viewer's light/dark preference.
+
+What it renders beyond the markdown:
+
+- **Hero** — verdict badge (colour by verdict), idea name, meta chips and the
+  pull quote, all parsed from the README's first lines.
+- **Scenario cards** — the founder's goal row, sustainable break-even, first
+  profitable month, peak cash, customers and MRR at the horizon, LTV/CAC, CAC
+  payback, for pessimistic / realistic / optimistic, from `model_output.json`.
+- **Charts** — active customers and cumulative cash by month (with hover values
+  and a table view), TAM/SAM/SOM tiles, the ±20 % sensitivity tornado, the
+  escape-routes table (one row per pivot output) and the model warnings.
+- **Tags and citations** — `[data: …]`, `[benchmark]`, `[estimate]`, `[guess]`,
+  `[fact]`/`[belief]`/`[assumption]`/`[unknown]` and `[BLOCKER]`/`[MAJOR]`/`[MINOR]`
+  become coloured chips; `[S12]` becomes a link to that row of the Sources
+  appendix.
+- **Interview, intake and research notes** ship collapsed; sources as an
+  appendix table.
+
+For the page to render well the markdown must keep the shapes above: the README
+H1 as `# <name> — Verdict: <GO|VALIDATE-FIRST|PIVOT|KILL>`, the meta line with
+` · ` separators, the pull quote as a blockquote right after it, every numbered
+file starting with a single H1, GFM tables with a header separator row, and the
+sources table's first column holding the bare ID (`S12`). The build prints a
+warning for each expected file it could not find; a finished run has none.

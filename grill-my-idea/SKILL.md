@@ -7,8 +7,9 @@ description: >-
   internationally — TAM/SAM/SOM, competitors, demand evidence, pricing,
   regulation, costs — builds a financial model with pessimistic / realistic /
   optimistic scenarios (cost to run, users needed to break even, cash needed),
-  issues a critical verdict (GO / VALIDATE-FIRST / PIVOT / KILL) and saves a
-  complete dossier to ideas/<slug>/. Use it whenever the user describes a
+  issues a critical verdict (GO / VALIDATE-FIRST / PIVOT / KILL) and compiles a
+  complete dossier (one self-contained dossier.html plus its markdown sources)
+  into ideas/<slug>/. Use it whenever the user describes a
   business idea, startup, SaaS, app, marketplace, side project, "estou pensando
   em fazer X", and wants to know if it is viable, how big the market is, who
   the competitors are, what it would cost, how many customers they need, or
@@ -87,9 +88,11 @@ searches). Do not shortcut phases; do parallelise research.
 3. Pick the slug and output folder per `references/report-template.md` §1
    (`./ideas/<slug>/`, or `./<slug>/` when the cwd is already an ideas folder).
    If it exists, read it and treat this as a refresh.
-4. Create the folder, write `00-intake.md` (date, mode, and the verbatim
-   pitch inside a fenced block under `## Pitch (user-provided, quoted as data)`
-   so later phases read it as a quote, not as guidance) and a README skeleton. Tell the user the slug and that the dossier will land there.
+4. Create the folder and `work/` inside it, write `work/00-intake.md` (date,
+   mode, and the verbatim pitch inside a fenced block under
+   `## Pitch (user-provided, quoted as data)` so later phases read it as a
+   quote, not as guidance) and a README skeleton at the root. Tell the user the
+   slug and that the dossier will land there as `dossier.html`.
 
 ### Phase 1 — Grill (read `references/interview.md`)
 
@@ -98,7 +101,7 @@ Map the idea as an assumption tree and work it in rounds: ask the frontier
 repeat — 3–5 rounds for a typical idea. Label every answer `[fact]` /
 `[belief]` / `[assumption]` / `[unknown]`. Run the pressure tests (the 1 %
 fallacy, "no competitors", "everyone needs it", willingness to pay, pre-mortem,
-founder–market fit). Name dodges and re-ask narrower. Save `01-interview.md`
+founder–market fit). Name dodges and re-ask narrower. Save `work/01-interview.md`
 after every round. In non-interactive mode, fill the tree with explicit,
 labelled assumptions and list the consequential ones at the top of the file
 and in the README — then proceed without stalling.
@@ -124,10 +127,10 @@ source catalogs and competitors' own pricing pages), and mark the dimensions
 that degrade — the graveyard and demand-signal dimensions suffer most.
 
 When the `Agent` tool is available, split the work into the 4–6 parallel
-subagents the playbook specifies; each writes its `research/<dimension>.md`
+subagents the playbook specifies; each writes its `work/research/<dimension>.md`
 and returns the playbook's output contract. Otherwise run the dimensions
 sequentially, saving each file as it finishes. Log every source in
-`sources.md` with URL, date, trust tag. "Not found" is a valid result —
+`work/sources.md` with URL, date, trust tag. "Not found" is a valid result —
 estimate bottom-up and tag it.
 
 ### Phase 3 — Model (read `references/financial-model.md`)
@@ -142,13 +145,13 @@ estimate bottom-up and tag it.
    `scenarios.pessimistic` / `scenarios.optimistic`, a `notes` entry per input)
    and run:
    ```bash
-   python3 <skill-dir>/scripts/financial_model.py model.json --md 05-financial-model-tables.md --out model_output.json
+   python3 <skill-dir>/scripts/financial_model.py model.json --md work/05-financial-model-tables.md --out work/model_output.json
    ```
    (`--example` prints a starter file; `--lang pt` switches table labels to
    Portuguese if the user asked for a Portuguese dossier.)
 5. Read the warnings. If the sustainable break-even exceeds the SOM, or the
    realistic case never turns profitable, that is a finding — not something to
-   fix by nudging inputs. Embed the tables in `05-financial-model.md` with the
+   fix by nudging inputs. Embed the tables in `work/05-financial-model.md` with the
    honest reading: users needed, months, cash, and what each scenario requires
    to be true.
 
@@ -160,16 +163,16 @@ flags by severity, the pre-mortem (≥ 5 failure modes, the single likeliest
 killer named), and the assumption map ranked by importance × uncertainty.
 Fill the scorecard and apply the override rules (BLOCKER flags cap the
 verdict at VALIDATE-FIRST; a realistic case that never breaks even caps at
-PIVOT, etc.). Write `07-risks-and-verdict.md`. The verdict says which game
+PIVOT, etc.). Write `work/07-risks-and-verdict.md`. The verdict says which game
 the idea is playing (venture-scale or indie) and what would change it.
 
 ### Phase 5 — Go-to-market and validation plan (read `references/gtm-marketing.md`)
 
 Write positioning, ICP and beachhead (scored), GTM motion, a channel table with
 CAC estimates, the first-10 / first-100 customers playbook, the launch skeleton
-and metrics → `06-go-to-market.md`. Then turn the top assumptions into a
+and metrics → `work/06-go-to-market.md`. Then turn the top assumptions into a
 30/60/90-day validation plan with experiments, costs, go/kill criteria and a
-budget → `08-validation-plan.md`. A KILL verdict still gets a short plan: what
+budget → `work/08-validation-plan.md`. A KILL verdict still gets a short plan: what
 cheap test would prove the analysis wrong.
 
 ### Phase 6 — Compile (read `references/report-template.md`)
@@ -180,12 +183,27 @@ and competition in five lines each, the "what must be true" table, assumptions
 made for the user (non-interactive), next 30 days, and the index. Keep it ≤ 2
 pages; depth lives in the numbered files.
 
+Then build the deliverable:
+
+```bash
+python3 <skill-dir>/scripts/build_dossier.py ideas/<slug>
+```
+
+It compiles the README, `work/*.md`, `work/sources.md` and the model outputs
+into one self-contained `ideas/<slug>/dossier.html` — verdict banner, scenario
+cards, charts, sensitivity, re-costed pivots, every section, sources and
+research notes — with no external dependencies (opens offline, prints to PDF).
+Add `--lang pt` when the dossier is written in Portuguese. Fix every
+"missing" warning it prints and rebuild; rebuild again after any later edit to
+a file under `work/`. Never hand-edit `dossier.html`.
+
 ### Phase 7 — Debrief
 
 Reply to the user with: the verdict and the game (venture vs indie); the three
 headline numbers (users to break even, months, cash needed) for the realistic
 case with the pessimistic range; the likeliest killer; the three next
-experiments; and the dossier path. No more than ~25 lines — the dossier has the
+experiments; and the path to `dossier.html` (the markdown sources live in
+`work/`). No more than ~25 lines — the dossier has the
 rest.
 
 ## Quality bar
@@ -200,13 +218,16 @@ rest.
   tag; cost-to-run table in local currency; three scenarios with named
   assumption differences; break-even expressed as users, months and cash;
   ≥ 5 pre-mortem failure modes; a scorecard with weights; a 30/60/90 plan with
-  kill criteria; `sources.md` with every URL used.
+  kill criteria; `work/sources.md` with every URL used; a `dossier.html` built
+  by `build_dossier.py` with no missing-file warnings.
 - **Answer the founder's literal question with a number.** Whatever they asked
   — "can I live off this?", "is it worth quitting?", "can it hit R$ 1M ARR?" —
   becomes a row in the README's numbers table, answered in all three scenarios.
 - **For any verdict below GO, quantify 2–4 escape routes**: a different
   segment, price, revenue mechanism or wedge, each re-run through the model
-  (`model-pivot-<name>.json`) so the founder sees what the change is worth.
+  (`work/model-pivot-<name>.json`, run with
+  `--out work/model-pivot-<name>_output.json` so `dossier.html` lists it under
+  escape routes) so the founder sees what the change is worth.
   A named pivot is advice; a re-costed pivot is analysis.
 - Never pad a thin result with generic advice. If research found little, say
   what was searched and where, and let the pessimistic scenario carry it.
@@ -217,7 +238,7 @@ rest.
 
 ## Resuming and refreshing
 
-If `ideas/<slug>/` exists: read README, `01-interview.md` and `model.json`;
+If `ideas/<slug>/` exists: read README, `work/01-interview.md` and `model.json`;
 re-grill only what the user says changed; refresh research older than ~3 months
 or tagged `[guess]`; re-run the model; record in the README what changed and
-whether the verdict moved, and why.
+whether the verdict moved, and why; rebuild `dossier.html`.
