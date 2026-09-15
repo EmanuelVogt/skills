@@ -21,6 +21,15 @@ status), one line each.
 
 - Slice by AC subsets (verticals), never by layer — "backend plan / frontend plan" is the epic
   smell wearing a costume.
+- **Closed doors.** A segment ships no entry point whose path lands in a later segment: every
+  control, chip, route, option or enum value a segment enables or adds must trigger a path that
+  works at the segment's close (pre-existing or in the same segment). A shared list that feeds
+  several surfaces (a filter row AND a creation dialog) gets one AC line per surface — "all N
+  enabled" names where. Either the slice includes the path or a one-line guard task keeps the
+  door hidden/disabled until the segment that opens it. Self-test before authoring: "what can
+  the user click at close that leads nowhere?" — any answer but "nothing" → re-slice. (Measured
+  here: a `video_script` chip enabled for the list also lit the Gerar dialog, whose writer path
+  was the next segment; the html designer produced a nonsense "script" and human QA caught it.)
 - Author segment k+1 ONLY after segment k closes: it plans on top of what actually landed, not on
   a guess. The map line reserves its scope; the detail waits. A later segment invalidated by an
   earlier QA costs one map-line edit, not a re-plan.

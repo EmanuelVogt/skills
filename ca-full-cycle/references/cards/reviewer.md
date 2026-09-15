@@ -22,7 +22,12 @@ only file you write. Read whole: this card, `research.md`. Ranged: `plan.md` `##
    `Touches`. Untraceable paths → gap (scope crept past the plan, or the plan lied — either way a
    human should know before QA). Then the removal-residue sweep: `rg` every symbol the plan
    removed or renamed — a hit outside `.ca-plans/` (a string, a config key, a doc, untyped code
-   no gate compiles) → gap.
+   no gate compiles) → gap. Then the **dead-door sweep**: for every UI control, route, option or
+   enum value the range enables or adds, trace the path it triggers to an implementation that
+   exists at HEAD (in-range or pre-existing) and matches the brief's intent for that value. A
+   door whose path is reserved for a later segment, or that falls into a generic handler the
+   brief never meant for it (an html designer answering a `video_script` chip) → gap, even when
+   the AC that enabled the door is evidenced — the AC proved the door, not where it leads.
 3. **Final gate, once, yourself** — the run's single full-suite execution (build + lint + ALL
    tests, e2e included), run with the log-on-disk pattern: log to a file, read back exit code +
    failing lines (`grep`/`tail`), never the log whole. Non-zero → gap — and never re-run a red
