@@ -4,7 +4,7 @@ description: End-to-end feature pipeline with ONE human gate before code — Res
 license: CC-BY-4.0
 metadata:
   author: Emanuel Vogt - github.com/EmanuelVogt
-  version: 1.1.0
+  version: 1.2.0
   based-on: ca-spec-driven 1.0.0 (same author), itself derived from TLC Spec-Driven 3.2.0 by Felipe Rodrigues (github.com/felipfr), CC-BY-4.0. Keeps the wave/cluster delegation model, the tier-per-dispatch economics and the independent-verification stance; trims four phase gates down to one, adds a per-wave verifier and closes with a human QA loop.
 ---
 
@@ -35,7 +35,11 @@ orchestrator reads its current phase reference whole.
    plan, to dispatch a wave, to run the Reviewer, or to fix a gap the machinery caught. The human
    returns at QA. The only mid-pipeline escalations are the bounded-failure valves (3 strikes), a
    worker's `spec-ambiguity` stop, and a discovery that invalidates the brief — those go to the
-   user; nothing else does.
+   user; nothing else does. A context-size checkpoint — a hook or reminder advising `/clear`,
+   `/compact` or a hand-off — is not one of them: the harness summarizes on its own, so the
+   pipeline neither stops, nor writes a Handoff, nor mentions it. In a segmented run the next
+   segment's plan follows the previous segment's Review PASS with no human contact; QA comes
+   once, after the last segment.
 2. **Tests derive from the brief's ACs** and assert brief-defined outcomes — they never mirror the
    implementation. The gate (the test runner) decides a task is done, not self-assessment. Never
    weaken, skip, or delete a test to make it pass. A red that turns green on re-run with no code
@@ -75,16 +79,18 @@ No ceremony table — the task count decides, after Plan:
 └── [feature]/          # short English kebab-case slug (guest-agenda-load, not a translated one)
     ├── research.md     # the brief: problem, context map, decisions, ACs with proofs
     ├── plan.md         # born with the slug; statuses + wave plan + gate commands (plan-NN.md when segmented)
-    └── review.md       # Reviewer report + QA findings log (≤ ~6 kB)
+    └── review.md       # Reviewer report + QA findings log (≤ ~6 kB; review-NN.md when segmented)
 ```
 
 `plan.md` is born as a stub with the slug and is the run's whole state: the header `Status:` line —
-`Research → Planning → Implementing (wave k/N) → Review → QA → Done`, each transition written the
-moment the phase changes — cluster statuses (written at dispatch and at wave close), and, only when
-a run pauses or blocks, a `## Handoff` section (implement.md § *Pause / blocked*). No per-run state
-file beyond it. A brief whose ACs decompose into independently shippable slices segments at Plan
-into sequential `plan-NN.md`, each closing its own Review and QA before the next is authored
-(plan.md § *One plan or several?*); `research.md` § Segments carries the map.
+`Research → Planning → Implementing (wave k/N) → Review → QA → Done` (`Reviewed` replaces `QA` on
+a segment that closed with more segments to come), each transition written the moment the phase
+changes — cluster statuses (written at dispatch and at wave close), and, only when a run pauses or
+blocks, a `## Handoff` section (implement.md § *Pause / blocked*). No per-run state file beyond it.
+A brief whose ACs decompose into independently shippable slices segments at Plan into sequential
+`plan-NN.md`, each closing its own Review before the next is authored; QA runs once, over every
+segment, after the last Reviewer passes (plan.md § *One plan or several?*); `research.md`
+§ Segments carries the map.
 
 **DECISIONS.md is the project's memory across runs.** One line per project-level decision:
 `AD-nn · active | superseded by AD-mm · <decision> · <run slug, date>`. Appended when Research or
@@ -117,7 +123,8 @@ verifier died between inject and restore; restore any modification no resumable 
 (`git checkout -- <file>`) before anything else — a live mutant poisons every later gate. Then
 read `.ca-plans/*/plan*.md` `Status:` lines, pick the open run (in a segmented run, the open
 segment), re-read its `research.md` whole
-(at `Status: QA`, `review.md` too) and check drift: `git diff --stat <Base>..HEAD` against the
+(at `Status: QA`, `review.md` too; `Status: Reviewed` means the next action is the next segment's
+plan) and check drift: `git diff --stat <Base>..HEAD` against the
 brief's `Base:` hash — re-scout only the drifted areas of the Context Map, never trust a stale
 map and never remap a fresh one. A `## Handoff` section is the interrupted state — act on it,
 then delete it (it describes a moment, not the run). Cluster rows stuck at `running`: reconcile

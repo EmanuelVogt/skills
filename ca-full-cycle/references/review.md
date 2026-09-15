@@ -15,7 +15,7 @@ mid only for a light (≤3-task) non-P0 run. It runs alone, nothing in flight.
 Review feature <slug> — checkout <abs path>, branch <branch>. Card first, whole:
 <skill dir>/references/cards/reviewer.md. research.md (ACs + proofs) is the truth; plan.md
 "## Wave Plan" for the task map. Commit range <first>..HEAD. Final gate: `<final cmd>`;
-pre-run test count <n>. P0: <yes|no>. Light: <yes|no>.
+pre-run test count <n>. P0: <yes|no>. Light: <yes|no>. Report: .ca-plans/<slug>/review[-NN].md.
 [Known flaky: <file:line list from worker summaries — evidence from these counts as zero>.]
 [Already probed: <per wave: T<n> file:line, killed> — aim the sensor where no verifier looked.]
 Tier: <high|mid> — <reason>. Return: compact verdict per the card, ≤1.5 kB.
@@ -24,9 +24,9 @@ Tier: <high|mid> — <reason>. Return: compact verdict per the card, ≤1.5 kB.
 The card holds the process (AC evidence check, self-run Final gate, discrimination sensor,
 single write of `review.md`, scope containment). The orchestrator only routes the outcome:
 
-- **PASS with no commit after the Final gate** → set `Status: QA` in `plan.md`, go to § 2.
+- **PASS with no commit after the Final gate** → *Segment close* below.
 - **PASS reached after fix rounds** → one closing Final-gate run first (the orchestrator,
-  directly, log-on-disk): green → `Status: QA`; red → the failures are new gaps and the loop
+  directly, log-on-disk): green → *Segment close*; red → the failures are new gaps and the loop
   continues (they count toward the 3). Without this, everything committed after the last full run
   ships to the human on a stale green.
 - **FAIL** → ranked gaps become fix tasks, clustered and dispatched like any wave (wave verifier
@@ -36,7 +36,13 @@ single write of `review.md`, scope containment). The orchestrator only routes th
 - **A verdict ending in `HANDOFF:` is not final** — dispatch a continuation Reviewer with the
   evidence-file path (card § *Turn budget*); never route a partial verdict to QA.
 
-## 2. QA handoff — the human returns
+**Segment close.** A single plan, or the last segment of a segmented run → `Status: QA` in the
+plan, go to § 2. A segment with more segments to come → `Status: Reviewed`, mark its line in
+`research.md` § Segments, one chat line ("segment k reviewed — planning segment k+1"), then author
+the next segment's plan (plan.md § 0) and run it. No QA, no question, no pause: the brief is the
+standing authorization, and the human's next contact is the one QA after the last segment.
+
+## 2. QA handoff — the human returns, once per run
 
 Announce completion in ONE compact block (user's language): what shipped (per AC, one line), the
 Reviewer's verdict line, then the **QA script** — generated from the ACs, not from the
@@ -51,7 +57,8 @@ Not in this run: [Out of Scope, one line — resets expectations before they bec
 Reply "qa ok" to close, or the item numbers that failed + what you saw.
 ```
 
-Rules: only human-observable ACs become steps (machine-proved ones — `gate`, internal `test` — are
+Rules: segmented run → ONE script covering every segment, steps grouped under a heading per
+`plan-NN` (evidence in that segment's `review-NN.md`). Only human-observable ACs become steps (machine-proved ones — `gate`, internal `test` — are
 already evidenced in `review.md`; do not ask a human to re-prove them). All ACs machine-proved,
 nothing observable → there is no script: present the per-AC evidence summary instead and ask for
 the explicit close — "qa ok" still closes. Steps are concrete actions
@@ -97,8 +104,9 @@ blocks it where installed; where it is not, the rule binds all the same.
 
 1. Any fix commit since the last full-suite run → ONE closing Final gate (log-on-disk); red →
    back to § 3, the finding is real.
-2. `plan.md` header → `Status: Done`; `review.md` QA Log closed with the final round, every
-   finding line carrying its § 3.5 marker.
+2. `plan.md` header → `Status: Done` (segmented: every `plan-NN.md`); the QA Log — in
+   `review.md`, or the last segment's `review-NN.md` — closed with the final round, every finding
+   line carrying its § 3.5 marker.
 3. **Run report** — append one entry to `.ca-plans/RUNS.md` from what the run already recorded
    (wave-row metrics + `Started:`); a number the harness never surfaced is `n/a`, never invented:
 
@@ -109,10 +117,9 @@ blocks it where installed; where it is not, the rule binds all the same.
    Main window: <tok | n/a> · Est. cost: ~$<x> [est — from current public prices]
    ```
 
-4. Segmented run (`research.md` § Segments): mark this segment's line, then author the next
-   segment's plan (plan.md § 0) — the confirmed brief is the standing authorization; the next
-   human contact is that segment's QA. Each segment closes its own `review.md` — the next
-   segment's Reviewer overwrites it; `RUNS.md` keeps every segment's closeout entry.
+4. Segmented run (`research.md` § Segments): mark every segment line Done; `RUNS.md` gets one
+   entry per segment from each `plan-NN.md`'s metrics (QA rounds on the last one). The
+   `review-NN.md` files stay — they are the QA evidence.
 5. One closing line: commit range, AC count delivered, anything consciously left in Assumptions or
    Out of Scope that the user may want as a next run.
 

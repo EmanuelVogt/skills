@@ -119,7 +119,8 @@ finished sub-agent re-invokes you). After the last wave's verifier passes →
 ## Pause / blocked — the run-level handoff
 
 Write a `## Handoff` section at the end of `plan.md` in exactly two situations: the user pauses
-the run, or a Rule-1 escalation leaves it blocked on an answer. ≤10 lines:
+the run, or a Rule-1 escalation leaves it blocked on an answer. A context checkpoint (a hook or
+reminder advising `/clear`, `/compact`, a hand-off) is neither — Rule 1: keep going. ≤10 lines:
 
 ```
 ## Handoff

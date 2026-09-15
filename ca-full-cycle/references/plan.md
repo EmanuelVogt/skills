@@ -14,10 +14,12 @@ mapped; a scout is dispatched here only for the Touches audit below.
 A brief can be bigger than any one plan should be. Before authoring tasks, check: do the ACs
 decompose into **independently shippable slices** — each a coherent subset a user could QA on its
 own? If yes AND a single plan would blow its caps (~20 tasks or ~10 kB) or weld unrelated
-verticals into one epic, **segment**: sequential `plan-01.md`, `plan-02.md`…, each a complete
-pipeline of its own — waves → wave verifiers → Reviewer → QA loop → `Status: Done` — before the
-next segment's plan is authored. Write the map into `research.md` § Segments (segment · AC ids ·
-status), one line each.
+verticals into one epic, **segment**: sequential `plan-01.md`, `plan-02.md`…, each its own
+pipeline — waves → wave verifiers → Reviewer → `Status: Reviewed` — chained back to back with no
+human contact: the next segment's plan is authored the moment the previous Reviewer passes
+(review.md § 1 *Segment close*). QA is ONE loop over every segment, after the last Reviewer; the
+run ends at `Status: Done` on every plan. Write the map into `research.md` § Segments (segment ·
+AC ids · status), one line each.
 
 - Slice by AC subsets (verticals), never by layer — "backend plan / frontend plan" is the epic
   smell wearing a costume.
@@ -30,11 +32,11 @@ status), one line each.
   the user click at close that leads nowhere?" — any answer but "nothing" → re-slice. (Measured
   here: a `video_script` chip enabled for the list also lit the Gerar dialog, whose writer path
   was the next segment; the html designer produced a nonsense "script" and human QA caught it.)
-- Author segment k+1 ONLY after segment k closes: it plans on top of what actually landed, not on
-  a guess. The map line reserves its scope; the detail waits. A later segment invalidated by an
-  earlier QA costs one map-line edit, not a re-plan.
-- Segment k+1 needs no new gate — the brief already confirmed every AC; each segment's QA is the
-  human contact. `RUNS.md` gets one entry per segment.
+- Author segment k+1 ONLY after segment k's Reviewer passes: it plans on top of what actually
+  landed, not on a guess. The map line reserves its scope; the detail waits. A QA finding against
+  an earlier segment is a fix task like any other (review.md § 3), never a re-plan.
+- Segment k+1 needs no new gate and no pause — the brief already confirmed every AC; the only
+  human contact after the brief is the consolidated QA. `RUNS.md` gets one entry per segment.
 - The common case stays common: one shippable slice → one `plan.md`, none of this ceremony.
 
 ## 1. Tasks
@@ -118,8 +120,9 @@ if any commit lands after it; never per task, never per wave).
 Implement with the `ca-full-cycle` skill — activate it by name and follow its Implement flow and
 Critical Rules. If it cannot be activated, STOP and tell the user.
 
-**Status:** Research → Planning → Implementing (wave k/N) → Review → QA → Done   ← the run's
-single resume point; write every transition the moment it happens
+**Status:** Research → Planning → Implementing (wave k/N) → Review → QA | Reviewed → Done   ← the
+run's single resume point; write every transition the moment it happens (`Reviewed`: a closed
+segment with more to come)
 **Started:** [ISO datetime, at slug creation]
 **Pre-run tests:** [passed/skipped counts + the list/collect command that produced them — Implement pre-flight]
 **Brief:** `.ca-plans/[feature]/research.md`
